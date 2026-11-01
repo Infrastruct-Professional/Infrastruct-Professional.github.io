@@ -38,3 +38,9 @@ Set `SHOPIFY_SHOP_DOMAIN` to the verified shop domain on the backend (default is
 `subscription-policy.mjs` provides a fail-closed entitlement decision model with product allowlisting, matching customer identities, shop matching, verified contract and payment requirements, and expiration. **The policy engine does not perform Shopify verification itself.** Its `identityVerified`, `contractVerified`, and `paymentCurrent` inputs must be populated exclusively by a trusted server-side identity and Shopify verification workflow, never by browser or webhook payload assertions. No HTTP endpoint currently grants these entitlements.
 
 Store inventory check (2026-11-01): only Shopify Messaging and Shopify ChatGPT MCP App are installed. No subscription app or selling plan groups were found. Installing a supported subscription app is required before creating genuine recurring offers.
+
+## Payment and confirmation policy
+
+`payment-policy.mjs` models payment-confirmation decisions, including amount/currency matching, customer matching, captured-payment status and independently verified subscription contracts. This is an **offline policy model**, not a payment processor or an email sender. Inputs such as `serverVerified` and `paymentCaptured` must come from a trusted provider verification workflow, never from a browser redirect. A decision to send confirmation does not mean an email has been sent.
+
+Payment rollout: Visa/Mastercard via a configured eligible recurring-payment provider first; PayPal Express recurring support currently reports DISABLED in Shopify; Bitcoin and bank transfers require distinct verified payment and renewal workflows and must not automatically activate recurring subscription entitlements. Confirmation email must be queued idempotently only after provider verification, with no card details or secrets included. Use Shopify notifications or a transactional email provider only after configuring sender authentication and templates.

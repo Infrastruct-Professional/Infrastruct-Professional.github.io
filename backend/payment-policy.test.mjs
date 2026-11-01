@@ -1,0 +1,10 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {PaymentPolicy} from './payment-policy.mjs';
+const p=new PaymentPolicy();
+const valid={serverVerified:true,paymentCaptured:true,customerId:'c1',paidCustomerId:'c1',orderId:'order-1',amountCents:1900,expectedAmountCents:1900,currency:'EUR',method:'card',subscriptionVerified:true,contractStatus:'ACTIVE'};
+test('payment redirect alone never confirms payment',()=>assert.equal(p.confirm({...valid,serverVerified:false}).confirmed,false));
+test('wrong customer or amount never confirms payment',()=>{assert.equal(p.confirm({...valid,paidCustomerId:'c2'}).confirmed,false);assert.equal(p.confirm({...valid,amountCents:1800}).confirmed,false);});
+test('verified card payment with verified contract can authorize activation decision',()=>{const r=p.confirm(valid);assert.equal(r.confirmed,true);assert.equal(r.activateSubscription,true);});
+test('manual Bitcoin and bank transfer cannot imply recurring contract',()=>{for(const method of ['bitcoin','bankTransfer']){const r=p.confirm({...valid,method});assert.equal(r.confirmed,true);assert.equal(r.activateSubscription,false);}});
+test('verified payment without active contract can confirm receipt but not activate access',()=>{const r=p.confirm({...valid,contractStatus:'PENDING'});assert.equal(r.sendConfirmation,true);assert.equal(r.activateSubscription,false);});
