@@ -66,7 +66,7 @@ export class InfrastructureWorkbench {
     const servicesMenu=this.el('nav',null,'workbench-services-menu',content);
     servicesMenu.setAttribute('aria-label','Interactive services');
     const workspace=this.el('div',null,'workbench-services-workspace',content);
-    const services=[['Secure Shell Booth',()=>this.host.shellBooth.mount(workspace)],['Encoders',()=>this.host.encoding.mount(workspace)],['DNS Providers',()=>this.host.dnsProviders.mount(workspace)]];
+    const services=[['Secure Shell Booth',()=>this.host.shellBooth.mount(workspace)],['Encoders',()=>this.host.encoding.mount(workspace)],['DNS Providers',()=>this.host.dnsProviders.mount(workspace)],['Web Hosting Providers',()=>this.host.hostingProviders.mount(workspace)]];
     const buttons=[];
     for(const [label,render] of services){
       const button=this.el('button',label,'workbench-service-tab',servicesMenu);

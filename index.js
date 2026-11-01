@@ -1,3 +1,4 @@
+import { HostingProviderService } from './hosting-provider-service.js';
 import { DNSProviderService } from './dns-provider-service.js';
 import { EncodingService } from './encoding-service.js';
 import { SecureShellBooth } from './secure-shell-booth.js';
