@@ -63,8 +63,21 @@ export class InfrastructureWorkbench {
       const list=this.el('ul',null,null,card);
       for(const item of stage.checks)this.el('li',item,null,list);
     }
-    this.host.shellBooth.mount(content);
-    this.host.encoding.mount(content);
+    const servicesMenu=this.el('nav',null,'workbench-services-menu',content);
+    servicesMenu.setAttribute('aria-label','Interactive services');
+    const workspace=this.el('div',null,'workbench-services-workspace',content);
+    const services=[['Secure Shell Booth',()=>this.host.shellBooth.mount(workspace)],['Encoders',()=>this.host.encoding.mount(workspace)]];
+    const buttons=[];
+    for(const [label,render] of services){
+      const button=this.el('button',label,'workbench-service-tab',servicesMenu);
+      button.type='button';button.setAttribute('aria-pressed','false');buttons.push(button);
+      button.addEventListener('click',()=>{
+        workspace.replaceChildren();render();
+        for(const other of buttons)other.setAttribute('aria-pressed',String(other===button));
+        this.host.audit('service_selected',{service:label});
+      });
+    }
+    this.el('p','Select Secure Shell Booth or Encoders to open its workspace.','workbench-intro',workspace);
     this.el('p','These are proposed service categories and review scopes, not a claim that managed delivery or infrastructure provisioning is currently available.','workbench-intro',content);
   }
 }
