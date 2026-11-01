@@ -96,8 +96,8 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
 .app,.app *{font-family:'Smooch Sans',sans-serif}
 .public-ip-label{display:inline-block;margin-left:9px;font-size:15px;color:#d5e9f5;white-space:nowrap}
 .public-ip-value{border:0!important;background:transparent!important;padding:0 3px!important;margin-left:3px;font-size:16px;font-weight:700;letter-spacing:.04em;white-space:nowrap;font-variant-numeric:tabular-nums;transition:color .2s,text-shadow .2s}
-.public-ip-value.is-online{color:#829e50!important;text-shadow:0 0 5px #789c4b,0 0 12px #638b36,0 0 20px #4f762d;cursor:copy}
-.public-ip-value.is-online:hover{color:#b3d777!important;text-shadow:0 0 9px #9ccc60,0 0 18px #7aab46}
+.public-ip-value.is-online{color:#5ecb51!important;text-shadow:none;cursor:copy}
+.public-ip-value.is-online:hover{color:#77e56b!important;text-shadow:none}
 .public-ip-value.is-offline{color:#ff4f58!important;text-shadow:0 0 7px #ff303a,0 0 14px #bf202b}
 .public-ip-value.is-pending{color:#b4c2cd!important;text-shadow:none}
 .minimal-banner{justify-content:flex-start;padding-left:4px;padding-right:8px;align-items:center}.banner-logo{display:block;width:min(150px,52vw);height:30px;object-fit:contain;object-position:left center}
