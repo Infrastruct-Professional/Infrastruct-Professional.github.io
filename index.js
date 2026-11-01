@@ -1,3 +1,4 @@
+import { WebOperatingSystem } from './web-os.js';
 import { SubscriptionProfile } from './subscription-profile.js';
 import { RemoteExecutionAdapter } from './remote-adapter.js';
 import { RuntimeOrchestrator } from './orchestrator.js';
@@ -23,6 +24,8 @@ class InfrastructProfessional {
     this.register('subscriptionProfile',this.profile.registry);
     this.register('commerce',this.commerce.registry);
     this.register('services',this.services.registry);
+    this.webOS=new WebOperatingSystem(this);
+    this.register('webOS',this.webOS.registry);
     this.render();
     this.audit('boot', { environment: this.environment });
     this.enqueue('health-check', () => this.audit('health_check', { mode: this.environment.mode }));
@@ -102,6 +105,7 @@ body:has(.navmobile) .recent-screen .appcard:active{transform:scale(.96)}
       const footer=this.element('footer',null,'minimal-footer',this.root);
       footer.setAttribute('role','toolbar');
       footer.setAttribute('aria-label','Infrastruct Professional taskbar');
+      this.taskbar=footer;
       const start=this.element('button','INFRASTRUCTOR','infrastruct-start',footer);
       start.type='button';start.setAttribute('aria-haspopup','menu');start.setAttribute('aria-expanded','false');
       const menu=this.element('section',null,'infrastruct-menu',this.root);
@@ -113,7 +117,7 @@ body:has(.navmobile) .recent-screen .appcard:active{transform:scale(.96)}
       for(const [label,description] of [['Workspace','Your infrastructure workspace'],['Plans','Subscription plans'],['Systems','System management']]){
         const item=this.element('button',null,'infrastruct-menu-item',menu);item.type='button';
         this.element('span',label,null,item);this.element('small',description,null,item);
-        item.addEventListener('click',()=>{this.audit('start_menu_select',{label});this.toggleStartMenu(false);});
+        item.addEventListener('click',()=>{this.audit('start_menu_select',{label});this.toggleStartMenu(false);this.webOS.open(label);});
       }
       start.addEventListener('click',event=>{event.stopPropagation();this.toggleStartMenu(!this.startMenu.classList.contains('is-open'));});
       this.onStartOutside=event=>{if(!menu.contains(event.target)&&!start.contains(event.target))this.toggleStartMenu(false);};
@@ -121,6 +125,7 @@ body:has(.navmobile) .recent-screen .appcard:active{transform:scale(.96)}
       document.addEventListener('pointerdown',this.onStartOutside);document.addEventListener('keydown',this.onStartEscape);
       this.runtimeLabel=this.element('span',null,'runtime-internal',footer);
       this.runtimeLabel.hidden=true;
+      this.webOS.mount(this.environment.mode,this.root);
       return;
     }
     const header=this.element('header',null,null,this.root);
@@ -184,7 +189,7 @@ body:has(.navmobile) .recent-screen .appcard:active{transform:scale(.96)}
   }
   back(){if(this.environment.mode==='desktop')return this.close();if(this.state.recent){this.state.recent=false;return this.state.foreground?this.showExisting(this.state.foreground):this.close();}const previous=this.state.history.pop();if(previous)return this.showExisting(previous);this.hide();}
   hide(){this.close();this.state.recent=false;this.state.foreground=null;this.audit('home');}
-  onResize(){const previous=this.environment.mode;this.environment=this.detect();this.audit('resize',{width:innerWidth,height:innerHeight});if(previous!==this.environment.mode){const recent=this.state.recent;this.toggleStartMenu(false);document.removeEventListener('pointerdown',this.onStartOutside);document.removeEventListener('keydown',this.onStartEscape);this.root.remove();this.close();this.render();if(this.environment.mode!=='desktop'){if(recent)this.appSwitcher();else if(this.state.foreground)this.showExisting(this.state.foreground);}}}
+  onResize(){const previous=this.environment.mode;this.environment=this.detect();this.audit('resize',{width:innerWidth,height:innerHeight});if(previous!==this.environment.mode){const recent=this.state.recent;this.toggleStartMenu(false);document.removeEventListener('pointerdown',this.onStartOutside);document.removeEventListener('keydown',this.onStartEscape);this.webOS.active?.unmount();this.root.remove();this.close();this.render();if(this.environment.mode!=='desktop'){if(recent)this.appSwitcher();else if(this.state.foreground)this.showExisting(this.state.foreground);}}}
   audit(type,detail={}) {if(!this.state)return;this.state.events.push({type,time:new Date().toISOString(),detail});if(this.state.events.length>300)this.state.events.shift();this.analyze();}
   async startR(){
     try{
