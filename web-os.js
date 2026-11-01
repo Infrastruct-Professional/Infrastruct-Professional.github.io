@@ -17,9 +17,28 @@ class RuntimeSystem {
     this.host.element('strong',name,null,bar);
     const controls=this.host.element('div',null,'os-controls',bar);
     const content=this.host.element('div',null,'os-content',el);
-    this.host.element('p',description,null,content);
+    if(name==='Plans')this.renderPlans(content);
+    else this.host.element('p',description,null,content);
     const win={id,name,element:el,bar,controls,minimized:false,maximized:false};
     this.windows.set(id,win);this.focus(id);this.animateWindow(el,'open');this.record('open',{id,name});return win;
+  }
+  async renderPlans(content){
+    const status=this.host.element('p','Loading subscription plans…','plans-status',content);
+    try{
+      const data=await this.host.siteAPI.plans();
+      if(!content.isConnected)return;
+      status.textContent='Proposed subscription plans · Billing and activation are not yet available.';
+      const grid=this.host.element('div',null,'plans-window-grid',content);
+      for(const plan of data.plans){
+        const card=this.host.element('article',null,'plans-window-card',grid);
+        this.host.element('strong',plan.title,null,card);
+        this.host.element('div',this.host.siteAPI.catalog.display(plan.monthlyCents)+' / month',null,card);
+        this.host.element('small',plan.audience,null,card);
+        const list=this.host.element('ul',null,null,card);
+        for(const feature of plan.features)this.host.element('li',feature,null,list);
+        const button=this.host.element('button','Coming soon',null,card);button.disabled=true;
+      }
+    }catch(error){status.textContent='Plan catalogue is temporarily unavailable.';}
   }
   focus(id){const win=this.windows.get(id);if(!win)return;this.focused=id;win.minimized=false;win.element.hidden=false;win.element.style.zIndex=String(50+ ++this.sequence);this.record('focus',{id});}
   minimize(id){const win=this.windows.get(id);if(!win)return;win.minimized=true;win.element.hidden=true;this.record('minimize',{id});}
@@ -43,7 +62,7 @@ export class DesktopSystem extends RuntimeSystem {
   mount(root){super.mount(root);this.installStyles();}
   installStyles(){if(document.getElementById('infrastruct-os-style'))return;
     const style=this.host.element('style',null,null,document.head);style.id='infrastruct-os-style';
-    style.textContent=`.os-window{position:fixed;top:18%;left:22%;width:min(620px,82vw);max-height:72dvh;overflow:auto;border:0;border-radius:16px;background:linear-gradient(135deg,rgba(36,65,89,.8),rgba(12,27,43,.8));box-shadow:0 18px 60px #0009;backdrop-filter:blur(24px) saturate(145%);-webkit-backdrop-filter:blur(24px) saturate(145%);color:#eaf6ff}.os-window[hidden]{display:none}.os-titlebar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 12px;cursor:grab;touch-action:none;user-select:none;background:linear-gradient(120deg,rgba(255,255,255,.22),rgba(255,255,255,.07));backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);box-shadow:inset 0 1px rgba(255,255,255,.25),0 4px 18px rgba(0,0,0,.12)}.os-controls{display:flex;gap:5px}.os-controls button{border:0;background:#ffffff12;border-radius:7px;padding:2px 9px;min-width:28px}.os-content{padding:18px}.os-content p{margin:0;font-size:14px}.os-window.is-maximized{inset:38px 0 0!important;width:auto!important;max-height:none!important;border-radius:0}.os-task-item{height:27px;border:0;padding:2px 11px;background:#ffffff15;border-radius:8px;font-size:11px}.os-mobile-nav{position:fixed;z-index:40;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:10px;padding:5px 10px;border-radius:18px;background:#172c41c9;backdrop-filter:blur(18px)}.os-mobile-nav button{border:0;background:#ffffff10;min-width:52px;padding:4px 12px}.os-mobile-nav[hidden]{display:none}.os-recents{position:fixed;z-index:45;inset:38px 0 54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#07121ad9;backdrop-filter:blur(20px)}.os-recents[hidden]{display:none}.os-recent-card{width:min(370px,85vw);min-height:100px;transform:perspective(650px) rotateX(7deg);background:#1a3554;border:0;border-radius:16px;padding:18px;text-align:left;touch-action:pan-y}@media(prefers-reduced-motion:reduce){.os-window,.os-recent-card{transition:none}}`;
+    style.textContent=`.plans-window-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-top:14px}.plans-window-card{display:flex;flex-direction:column;gap:7px;padding:15px;border-radius:12px;background:#ffffff0d}.plans-window-card strong{font-size:22px}.plans-window-card small{color:#aac2d2}.plans-window-card ul{padding-left:16px;margin:5px 0;flex:1}.plans-window-card button:disabled{opacity:.5;cursor:not-allowed}.plans-status{font-size:16px!important}.os-window{position:fixed;top:18%;left:22%;width:min(620px,82vw);max-height:72dvh;overflow:auto;border:0;border-radius:16px;background:linear-gradient(135deg,rgba(36,65,89,.8),rgba(12,27,43,.8));box-shadow:0 18px 60px #0009;backdrop-filter:blur(24px) saturate(145%);-webkit-backdrop-filter:blur(24px) saturate(145%);color:#eaf6ff}.os-window[hidden]{display:none}.os-titlebar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 12px;cursor:grab;touch-action:none;user-select:none;background:linear-gradient(120deg,rgba(255,255,255,.22),rgba(255,255,255,.07));backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);box-shadow:inset 0 1px rgba(255,255,255,.25),0 4px 18px rgba(0,0,0,.12)}.os-controls{display:flex;gap:5px}.os-controls button{border:0;background:#ffffff12;border-radius:7px;padding:2px 9px;min-width:28px}.os-content{padding:18px}.os-content p{margin:0;font-size:14px}.os-window.is-maximized{inset:38px 0 0!important;width:auto!important;max-height:none!important;border-radius:0}.os-task-item{height:27px;border:0;padding:2px 11px;background:#ffffff15;border-radius:8px;font-size:11px}.os-mobile-nav{position:fixed;z-index:40;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:10px;padding:5px 10px;border-radius:18px;background:#172c41c9;backdrop-filter:blur(18px)}.os-mobile-nav button{border:0;background:#ffffff10;min-width:52px;padding:4px 12px}.os-mobile-nav[hidden]{display:none}.os-recents{position:fixed;z-index:45;inset:38px 0 54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#07121ad9;backdrop-filter:blur(20px)}.os-recents[hidden]{display:none}.os-recent-card{width:min(370px,85vw);min-height:100px;transform:perspective(650px) rotateX(7deg);background:#1a3554;border:0;border-radius:16px;padding:18px;text-align:left;touch-action:pan-y}@media(prefers-reduced-motion:reduce){.os-window,.os-recent-card{transition:none}}`;
   }
   open(name,description){const win=super.open(name,description);const button=(label,fn)=>{const b=this.host.element('button',label,null,win.controls);b.type='button';b.addEventListener('click',fn);return b;};
     button('□',()=>this.maximize(win.id));button('×',()=>this.close(win.id));
