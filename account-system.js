@@ -2,6 +2,7 @@
 export class AccountSystem {
   constructor(host){this.host=host;this.registry={session:{instances:[],functions:{},nested:{},events:[]}};this.config={endpoint:'',enabled:false};this.authenticated=false;this.demoSession=null;this.menu=null;this.dialog=null;this.providers=['ChatGPT','GitHub','Google','Microsoft','Apple'];}
   mount(menu){this.menu=menu;this.renderMenu();if(this.config.enabled)this.refresh();else this.host.publicIP?.setIdentity?.('Guest');}
+  hasIdentity(){return this.authenticated===true||this.demoSession?.type==='demo';}
   renderMenu(){
     this.actions?.remove();
     this.actions=this.host.element('div',null,'account-menu-actions',this.menu);
@@ -48,10 +49,11 @@ export class AccountSystem {
     this.host.publicIP?.setIdentity?.('Demo · ChatGPT');
     this.host.audit('account_demo_sign_in',{provider:'ChatGPT',verified:false});
     this.close();if(this.menu?.isConnected)this.renderMenu();
+    this.host.webOS?.active?.windows?.forEach(win=>{if(win.name==='Plans')this.host.webOS.active.navigateContent(win.content,'Plans','',false);});
   }
   close(){this.dialog?.remove();this.dialog=null;}
   async signOut(){
-    if(this.demoSession){this.demoSession=null;this.host.publicIP?.setIdentity?.('Guest');this.host.audit('account_demo_sign_out');if(this.menu?.isConnected)this.renderMenu();return;}
+    if(this.demoSession){this.demoSession=null;this.host.freePlanSelected=false;for(const item of this.host.planMenuItems||[])item.hidden=true;this.host.publicIP?.setIdentity?.('Guest');this.host.audit('account_demo_sign_out');if(this.menu?.isConnected)this.renderMenu();this.host.webOS?.active?.windows?.forEach(win=>{if(['Plans','Services','Tools'].includes(win.name))this.host.webOS.active.navigateContent(win.content,'Plans','',false);});return;}
     if(!this.config.enabled)return;
     try{const response=await fetch(this.endpoint('logout'),{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:'{}'});if(!response.ok)throw new Error('Sign-out failed');await this.refresh();}
     catch{this.open('Sign out');const p=this.dialog?.querySelector('p');if(p)p.textContent='Unable to confirm sign-out. Please try again.';}

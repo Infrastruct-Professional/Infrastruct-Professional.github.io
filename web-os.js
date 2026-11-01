@@ -40,7 +40,9 @@ class RuntimeSystem {
     try{
       const data=await this.host.siteAPI.plans();
       if(!content.isConnected)return;
-      status.textContent='Select Free to enter the workspace. Paid subscriptions are not yet available.';
+      const identified=Boolean(this.host.account?.hasIdentity());
+      status.textContent=identified?'Choose a plan. Free checkout totals €0.00 and never requests payment details. Paid plans are previews only.':'Sign in first to choose a plan. ChatGPT demo sign-in is available; it is not real authentication.';
+      if(!identified){const signIn=this.host.element('button','Sign in / Sign up',null,content);signIn.type='button';signIn.addEventListener('click',()=>this.host.account.open('Sign in / Sign up'));}
       const grid=this.host.element('div',null,'plans-window-grid',content);
       for(const plan of data.plans){
         const card=this.host.element('article',null,'plans-window-card',grid);
@@ -49,8 +51,8 @@ class RuntimeSystem {
         this.host.element('small',plan.audience,null,card);
         const list=this.host.element('ul',null,null,card);
         for(const feature of plan.features)this.host.element('li',feature,null,list);
-        if(plan.id==='free'){this.host.element('small','Available now · No subscription required',null,card);const button=this.host.element('button','Enter Free plan',null,card);button.type='button';button.addEventListener('click',()=>this.host.selectFreePlan(content));}
-        else{const button=this.host.element('button','Coming soon',null,card);button.disabled=true;}
+        if(plan.id==='free'){this.host.element('small','Total due: €0.00 · No card required · Browser-session access',null,card);const button=this.host.element('button',identified?'Confirm Free · €0.00':'Sign in to select Free',null,card);button.type='button';button.addEventListener('click',()=>this.host.selectFreePlan(content));}
+        else{this.host.element('small','Plan prepared · Billing and entitlements not active',null,card);const button=this.host.element('button','Preview '+plan.title,null,card);button.type='button';button.disabled=!identified;button.addEventListener('click',()=>{const note=card.querySelector('.plan-preview-note')||this.host.element('small','', 'plan-preview-note',card);note.textContent=plan.title+' is a preview. No charge, subscription or entitlement has been created.';this.host.audit('paid_plan_preview',{plan:plan.id,charged:false});});}
       }
     }catch(error){status.textContent='Plan catalogue is temporarily unavailable.';}
   }

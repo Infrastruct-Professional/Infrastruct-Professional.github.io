@@ -189,6 +189,7 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
     }
   }
   selectFreePlan(content=null){
+    if(!this.account.hasIdentity()){this.account.open('Sign in / Sign up');return;}
     this.freePlanSelected=true;
     for(const item of this.planMenuItems||[])item.hidden=false;
     this.audit('free_plan_entered',{scope:'browser-session'});
