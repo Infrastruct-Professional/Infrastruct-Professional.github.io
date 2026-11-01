@@ -21,7 +21,7 @@ export class RemoteExecutionAdapter {
   async prepare(manifest,signal){
     if(manifest?.schema!=='infrastruct.pro/runtime/v1')throw new Error('Unsupported manifest');
     const result=await this.request('prepare',{manifest},signal);
-    if(typeof result?.operationId!=='string'||typeof result?.summary!=='string'||typeof result?.approvalToken!=='string')throw new Error('Invalid executor response');
+    if(typeof result?.operationId!=='string'||typeof result?.summary!=='string'||typeof result?.target!=='string'||!result.target.trim()||typeof result?.approvalToken!=='string')throw new Error('Invalid executor response');
     this.registry.requests.instances.push({operationId:result.operationId,state:'awaiting-approval'});
     return result;
   }

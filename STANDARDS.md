@@ -46,3 +46,9 @@
 - A separate explicit approval UI must show the exact target and change summary before calling `POST /execute` with `{operationId,approvalToken,approved:true}`. A browser-provided `approved` flag is not proof of authorization; the backend must independently verify authorization, CSRF defenses, token binding, idempotency and approval state.
 - `POST /revoke` accepts `{operationId}`; the executor must cancel queued work and revoke temporary credentials. Running work may need rollback or compensation. The executor must enforce server-side timeouts, least privilege, sandboxing, output redaction, audit retention policy, and cleanup.
 - No remote backend or Shopify billing verification has been deployed. The personal-server tool currently exports a planning manifest only. Local Finish does not revoke a remote operation unless a trusted backend has actually implemented that lifecycle.
+
+## Explicit remote approval interface
+- After generating a plan, the workbench renders a remote-execution section. Its Prepare button remains disabled until an executor is configured.
+- A trusted executor must return `target` (nonempty string), `summary`, `operationId`, and `approvalToken`; otherwise the client refuses to display approval. The user must check a separate authorization box before submitting execution.
+- The approval UI reports only the executor's response, not independently verified deployment success. Revocation is a request, not a guarantee. Changing tools or finishing the local session aborts in-flight browser requests but cannot guarantee remote cancellation.
+- The trusted executor must independently enforce verified Shopify subscription entitlements and authentication. No backend, webhook processor, or subscription access enforcement is deployed yet.
