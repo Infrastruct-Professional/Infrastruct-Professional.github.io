@@ -29,6 +29,20 @@ export class InfrastructureWorkbench {
     for(const [name,url] of this.sources){const a=this.el('a',name,null,sources);a.href=url;a.target='_blank';a.rel='noopener noreferrer';}
   }
   renderTools(content){
+    const vault=this.host.planStorage;
+    if(!vault.available()){this.el('p','Planning is disabled: persistent browser storage and Web Crypto are required. Enable site storage in browser settings and reload.','workbench-intro',content);return;}
+    const gate=this.el('section',null,'workbench-stage',content);
+    this.el('h3','Encrypted local planning storage',null,gate);
+    this.el('p','Create or unlock your local vault with a passphrase (12+ characters). Plans are encrypted using AES-256-GCM before browser storage. Your passphrase is not stored or sent to a server. Losing it means losing access to the vault.',null,gate);
+    const pass=this.el('input',null,null,gate);pass.type='password';pass.autocomplete='new-password';pass.placeholder='Vault passphrase (12+ characters)';pass.setAttribute('aria-label','Vault passphrase');
+    const unlock=this.el('button',vault.exists()?'Unlock vault':'Create encrypted vault',null,gate);unlock.type='button';
+    const message=this.el('p',vault.key?'Vault unlocked for this page.':'Planning locked until encrypted storage is unlocked.','workbench-progress',gate);message.setAttribute('role','status');
+    const area=this.el('div',null,null,content);
+    const show=()=>{area.replaceChildren();if(vault.key)this.renderUnlockedTools(area);};
+    unlock.addEventListener('click',async()=>{unlock.disabled=true;try{await vault.unlock(pass.value);pass.value='';message.textContent='Encrypted vault unlocked. Planning is now available.';show();}catch(error){message.textContent=error.message;}finally{unlock.disabled=false;}});
+    show();
+  }
+  renderUnlockedTools(content){
     const form=this.el('form',null,'workbench-form',content);
     const field=this.el('label','Project / infrastructure name',null,form);
     const name=this.el('input',null,null,field);name.name='project';name.required=true;name.maxLength=100;name.placeholder='Example: Production web platform';
@@ -46,11 +60,11 @@ export class InfrastructureWorkbench {
     const progress=this.el('p','0 of 24 readiness items assessed','workbench-progress',form);
     const update=()=>{const done=boxes.filter(item=>item.box.checked).length;progress.textContent=`${done} of ${boxes.length} readiness items assessed (${Math.round(done/boxes.length*100)}%) · Checklist progress is not a certification.`;};
     boxes.forEach(item=>item.box.addEventListener('change',update));
-    const exportButton=this.el('button','Export infrastructure plan (JSON)',null,form);exportButton.type='submit';
-    form.addEventListener('submit',event=>{event.preventDefault();if(!form.reportValidity())return;
+    const exportButton=this.el('button','Save encrypted infrastructure plan',null,form);exportButton.type='submit';
+    const saveStatus=this.el('p','Plan data remains in this browser, encrypted at rest.','workbench-progress',form);saveStatus.setAttribute('role','status');
+    form.addEventListener('submit',async event=>{event.preventDefault();if(!form.reportValidity())return;
       const data={schema:'infrastruct.pro/planning/v1',project:name.value.trim(),deploymentModel:select.value,createdAt:new Date().toISOString(),status:'draft-not-deployed',stages:this.stages.map(stage=>({name:stage.name,goal:stage.goal,checks:boxes.filter(item=>item.stage===stage.name).map(item=>({label:item.check,assessed:item.box.checked}))}))};
-      const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='infrastructure-plan.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
-      this.registry.assessment.events.push({type:'export',checked:boxes.filter(item=>item.box.checked).length});this.host.audit('infrastructure_plan_export');
+      exportButton.disabled=true;try{await this.host.planStorage.savePlan(data);saveStatus.textContent='Plan encrypted and saved in this browser.';this.registry.assessment.events.push({type:'encrypted_save',checked:boxes.filter(item=>item.box.checked).length});}catch(error){saveStatus.textContent='Unable to save: '+error.message;}finally{exportButton.disabled=false;}
     });
   }
   renderServices(content){

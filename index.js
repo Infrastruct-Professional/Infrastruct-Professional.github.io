@@ -1,3 +1,4 @@
+import { EncryptedPlanStorage } from './encrypted-plan-storage.js';
 import { HostingProviderService } from './hosting-provider-service.js';
 import { DNSProviderService } from './dns-provider-service.js';
 import { EncodingService } from './encoding-service.js';
@@ -21,6 +22,7 @@ class InfrastructProfessional {
     this.frontPageMinimal=true;
     this.account=new AccountSystem(this);
     this.freePlanSelected=false;
+    this.planStorage=new EncryptedPlanStorage(this);
     this.hostingProviders=new HostingProviderService(this);
     this.dnsProviders=new DNSProviderService(this);
     this.encoding=new EncodingService(this);
