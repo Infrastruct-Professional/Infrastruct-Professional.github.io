@@ -187,11 +187,12 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
       this.action(nav,'‹',()=>this.back());this.action(nav,'○',()=>this.hide());this.action(nav,'▢',()=>this.appSwitcher());
     }
   }
-  selectFreePlan(){
+  selectFreePlan(content=null){
     this.freePlanSelected=true;
     for(const item of this.planMenuItems||[])item.hidden=false;
     this.audit('free_plan_entered',{scope:'browser-session'});
-    this.webOS.open('Services');
+    if(content)this.webOS.active?.navigateContent?.(content,'Services');
+    else this.webOS.open('Services');
   }
   toggleBrandMenu(open){
     if(!this.brandMenu||!this.brandButton)return;
