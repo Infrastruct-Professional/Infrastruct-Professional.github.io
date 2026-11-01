@@ -52,3 +52,9 @@
 - A trusted executor must return `target` (nonempty string), `summary`, `operationId`, and `approvalToken`; otherwise the client refuses to display approval. The user must check a separate authorization box before submitting execution.
 - The approval UI reports only the executor's response, not independently verified deployment success. Revocation is a request, not a guarantee. Changing tools or finishing the local session aborts in-flight browser requests but cannot guarantee remote cancellation.
 - The trusted executor must independently enforce verified Shopify subscription entitlements and authentication. No backend, webhook processor, or subscription access enforcement is deployed yet.
+
+## Trusted backend scaffold (2026-11)
+- `backend/server.mjs` is an undeployed Node.js HTTP scaffold. It binds to localhost, fails closed for all real deployment and billing operations, and can validate raw-body Shopify webhook HMAC when a secret is supplied.
+- Webhook HMAC authenticity alone does not establish payment or subscription entitlement. The scaffold intentionally does not grant access on webhook reception.
+- `backend/server.test.mjs` covers authentication rejection, execution refusal, checkout refusal, webhook HMAC rejection and cross-origin rejection.
+- This is not a production-ready executor, Shopify integration, or identity provider. See `backend/README.md` for mandatory production gates.
