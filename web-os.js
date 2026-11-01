@@ -88,6 +88,7 @@ export class TabletSystem extends RuntimeSystem {
   }
   open(name,description){this.recentPanel.hidden=true;this.windows.forEach(w=>w.element.hidden=true);const win=super.open(name,description);win.element.style.cssText='inset:38px 0 54px;width:auto;max-height:none;border-radius:0';return win;}
   home(){this.windows.forEach(w=>w.element.hidden=true);this.recentPanel.hidden=true;this.record('minimize',{home:true});}
+  dismissRecents(){if(this.recentPanel&&!this.recentPanel.hidden){this.recentPanel.hidden=true;this.record('recents',{dismissed:true});}}
   back(){if(!this.recentPanel.hidden){this.recentPanel.hidden=true;return;}this.home();}
   recents(){this.recentPanel.replaceChildren();if(this.windows.size===0){this.home();this.record('recents',{count:0});return;}this.recentPanel.hidden=false;for(const win of [...this.windows.values()].reverse()){
     const card=this.host.element('button',win.name,'os-recent-card',this.recentPanel);let x=null;

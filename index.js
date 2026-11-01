@@ -179,6 +179,10 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
   }
   toggleBrandMenu(open){
     if(!this.brandMenu||!this.brandButton)return;
+    if(open){
+      if(this.state.recent){this.close();this.state.recent=false;this.audit('recents_dismissed_for_menu');}
+      this.webOS.active?.dismissRecents?.();
+    }
     this.brandMenu.classList.toggle('is-open',Boolean(open));
     this.brandMenu.setAttribute('aria-hidden',String(!open));
     this.brandButton.setAttribute('aria-expanded',String(Boolean(open)));
@@ -212,7 +216,7 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
     const bar=this.element('div',null,'windowbar',w);this.element('strong','Open applications',null,bar);
     const cards=this.element('div',null,'windowbody appcards',w);
     const names=[...this.state.windows];
-    if(!names.length)this.element('p','No applications are open.',null,cards);
+    if(!names.length){this.hide();return;}
     names.forEach(name=>{
       const card=this.action(cards,name,()=>this.open(name),'appcard');
       this.element('small','Tap to reopen · swipe horizontally to close',null,card);
