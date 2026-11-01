@@ -87,7 +87,7 @@ body:has(.navmobile) .recent-screen .appcard:active{transform:scale(.96)}
 .infrastruct-menu.is-open{transform:translateY(0) scale(1);opacity:1;visibility:visible;pointer-events:auto;border-radius:20px}
 .infrastruct-menu-title{font-size:15px;letter-spacing:.16em}.infrastruct-menu-subtitle{font-size:12px;margin:0 0 8px;color:#b5d0df}
 .infrastruct-menu-item{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:10px 12px;text-align:left;border:0;border-radius:11px;background:#ffffff0b;box-shadow:none;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}.infrastruct-menu-item small{font-size:11px;color:#9bb9cb}
-@media(prefers-reduced-motion:reduce){.infrastruct-menu{transition:none}}
+.brand-glass-button{width:34px;height:32px;display:grid;place-items:center;padding:2px;border:0;border-radius:9px;background:linear-gradient(145deg,#ffffff25,#ffffff08);box-shadow:inset 0 1px #ffffff36;backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);transition:transform .25s cubic-bezier(.2,1.2,.3,1),background .2s,box-shadow .2s;cursor:pointer}.brand-glass-button img{width:28px;height:28px;object-fit:contain}.brand-glass-button[aria-expanded=true]{transform:scale(1.07);background:#ffffff30;box-shadow:inset 0 1px #ffffff55,0 3px 14px #0004}.brand-corner-menu{position:fixed;top:44px;left:12px;z-index:40;width:min(240px,calc(100vw - 24px));padding:10px;visibility:hidden;pointer-events:none;opacity:0;transform:translateY(-13px) scale(.72);transform-origin:17px 0;border:0;border-radius:6px 18px 18px 18px;background:linear-gradient(140deg,rgba(45,77,101,.8),rgba(10,28,44,.8));box-shadow:0 18px 45px #0007,inset 0 1px #ffffff27;backdrop-filter:blur(26px) saturate(160%);-webkit-backdrop-filter:blur(26px) saturate(160%);transition:opacity .23s ease,transform .3s cubic-bezier(.2,1.2,.3,1),visibility .3s}.brand-corner-menu.is-open{visibility:visible;pointer-events:auto;opacity:1;transform:translateY(0) scale(1);border-radius:16px}.brand-menu-item{display:block;width:100%;padding:12px 14px;text-align:left;border:0;border-radius:10px;background:#ffffff0c;backdrop-filter:blur(12px);font-weight:600}.brand-menu-item:hover{background:#ffffff22}@media(prefers-reduced-motion:reduce){.infrastruct-menu,.brand-corner-menu,.brand-glass-button{transition:none}}
 .minimal-banner{justify-content:flex-start}.banner-logo{display:block;width:min(150px,52vw);height:30px;object-fit:contain;object-position:left center}
 `;
   }
@@ -98,6 +98,18 @@ body:has(.navmobile) .recent-screen .appcard:active{transform:scale(.96)}
       // Temporary presentation mode: preserve the banner/footer shells, hide all their contents and the page body.
       const header=this.element('header',null,'minimal-banner',this.root);
       header.setAttribute('aria-label','Infrastruct Professional banner');
+      const brandButton=this.element('button',null,'brand-glass-button',header);
+      brandButton.type='button';brandButton.setAttribute('aria-label','Open Infrastruct Professional menu');
+      brandButton.setAttribute('aria-haspopup','menu');brandButton.setAttribute('aria-expanded','false');
+      const brandIcon=this.element('img',null,null,brandButton);
+      brandIcon.src='./infrastruct-favicon.png';brandIcon.alt='';brandIcon.width=28;brandIcon.height=28;
+      const brandMenu=this.element('section',null,'brand-corner-menu',this.root);
+      brandMenu.id='brand-corner-menu';brandMenu.setAttribute('aria-label','Infrastruct Professional menu');
+      brandMenu.setAttribute('aria-hidden','true');brandButton.setAttribute('aria-controls',brandMenu.id);
+      const plans=this.element('button','Plans','brand-menu-item',brandMenu);
+      plans.type='button';plans.addEventListener('click',()=>{this.toggleBrandMenu(false);this.webOS.open('Plans');this.audit('brand_menu_select',{label:'Plans'});});
+      this.brandButton=brandButton;this.brandMenu=brandMenu;
+      brandButton.addEventListener('click',event=>{event.stopPropagation();this.toggleStartMenu(false);this.toggleBrandMenu(!brandMenu.classList.contains('is-open'));});
       const main=this.element('main',null,'minimal-main',this.root);
       main.setAttribute('aria-label','Infrastruct Professional');
       const logo=this.element('img',null,'center-logo',main);
@@ -119,9 +131,9 @@ body:has(.navmobile) .recent-screen .appcard:active{transform:scale(.96)}
         this.element('span',label,null,item);this.element('small',description,null,item);
         item.addEventListener('click',()=>{this.audit('start_menu_select',{label});this.toggleStartMenu(false);this.webOS.open(label);});
       }
-      start.addEventListener('click',event=>{event.stopPropagation();this.toggleStartMenu(!this.startMenu.classList.contains('is-open'));});
-      this.onStartOutside=event=>{if(!menu.contains(event.target)&&!start.contains(event.target))this.toggleStartMenu(false);};
-      this.onStartEscape=event=>{if(event.key==='Escape'&&menu.classList.contains('is-open')){this.toggleStartMenu(false);start.focus();}};
+      start.addEventListener('click',event=>{event.stopPropagation();this.toggleBrandMenu(false);this.toggleStartMenu(!this.startMenu.classList.contains('is-open'));});
+      this.onStartOutside=event=>{if(!menu.contains(event.target)&&!start.contains(event.target))this.toggleStartMenu(false);if(!brandMenu.contains(event.target)&&!brandButton.contains(event.target))this.toggleBrandMenu(false);};
+      this.onStartEscape=event=>{if(event.key==='Escape'){if(menu.classList.contains('is-open')){this.toggleStartMenu(false);start.focus();}if(brandMenu.classList.contains('is-open')){this.toggleBrandMenu(false);brandButton.focus();}}};
       document.addEventListener('pointerdown',this.onStartOutside);document.addEventListener('keydown',this.onStartEscape);
       this.runtimeLabel=this.element('span',null,'runtime-internal',footer);
       this.runtimeLabel.hidden=true;
@@ -150,6 +162,13 @@ body:has(.navmobile) .recent-screen .appcard:active{transform:scale(.96)}
       const nav=this.element('nav',null,'navmobile',this.root);
       this.action(nav,'‹',()=>this.back());this.action(nav,'○',()=>this.hide());this.action(nav,'▢',()=>this.appSwitcher());
     }
+  }
+  toggleBrandMenu(open){
+    if(!this.brandMenu||!this.brandButton)return;
+    this.brandMenu.classList.toggle('is-open',Boolean(open));
+    this.brandMenu.setAttribute('aria-hidden',String(!open));
+    this.brandButton.setAttribute('aria-expanded',String(Boolean(open)));
+    this.audit('brand_menu_toggle',{open:Boolean(open)});
   }
   toggleStartMenu(open){
     if(!this.startMenu||!this.startButton)return;
@@ -189,7 +208,7 @@ body:has(.navmobile) .recent-screen .appcard:active{transform:scale(.96)}
   }
   back(){if(this.environment.mode==='desktop')return this.close();if(this.state.recent){this.state.recent=false;return this.state.foreground?this.showExisting(this.state.foreground):this.close();}const previous=this.state.history.pop();if(previous)return this.showExisting(previous);this.hide();}
   hide(){this.close();this.state.recent=false;this.state.foreground=null;this.audit('home');}
-  onResize(){const previous=this.environment.mode;this.environment=this.detect();this.audit('resize',{width:innerWidth,height:innerHeight});if(previous!==this.environment.mode){const recent=this.state.recent;this.toggleStartMenu(false);document.removeEventListener('pointerdown',this.onStartOutside);document.removeEventListener('keydown',this.onStartEscape);this.webOS.active?.unmount();this.root.remove();this.close();this.render();if(this.environment.mode!=='desktop'){if(recent)this.appSwitcher();else if(this.state.foreground)this.showExisting(this.state.foreground);}}}
+  onResize(){const previous=this.environment.mode;this.environment=this.detect();this.audit('resize',{width:innerWidth,height:innerHeight});if(previous!==this.environment.mode){const recent=this.state.recent;this.toggleStartMenu(false);this.toggleBrandMenu(false);document.removeEventListener('pointerdown',this.onStartOutside);document.removeEventListener('keydown',this.onStartEscape);this.webOS.active?.unmount();this.root.remove();this.close();this.render();if(this.environment.mode!=='desktop'){if(recent)this.appSwitcher();else if(this.state.foreground)this.showExisting(this.state.foreground);}}}
   audit(type,detail={}) {if(!this.state)return;this.state.events.push({type,time:new Date().toISOString(),detail});if(this.state.events.length>300)this.state.events.shift();this.analyze();}
   async startR(){
     try{
