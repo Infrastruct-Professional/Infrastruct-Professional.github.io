@@ -1,6 +1,6 @@
 /** Customer account controls. Authentication must be verified by a trusted server. */
 export class AccountSystem {
-  constructor(host){this.host=host;this.registry={session:{instances:[],functions:{},nested:{},events:[]}};this.config={endpoint:'',enabled:false};this.authenticated=false;this.menu=null;this.dialog=null;this.providers=['GitHub','Google','Microsoft','Apple'];}
+  constructor(host){this.host=host;this.registry={session:{instances:[],functions:{},nested:{},events:[]}};this.config={endpoint:'',enabled:false};this.authenticated=false;this.menu=null;this.dialog=null;this.providers=['ChatGPT','GitHub','Google','Microsoft','Apple'];}
   mount(menu){this.menu=menu;this.renderMenu();if(this.config.enabled)this.refresh();}
   renderMenu(){
     this.actions?.remove();
@@ -33,10 +33,10 @@ export class AccountSystem {
   }
   authenticate(provider){
     if(!this.providers.includes(provider))return;
-    if(!this.config.enabled){if(this.status)this.status.textContent=provider+' sign-in will be available after secure provider configuration.';return;}
+    if(!this.config.enabled){if(this.status)this.status.textContent=provider==='ChatGPT'?'ChatGPT sign-in is prepared for migration but requires a supported Site identity integration or an approved OAuth client and verified backend.':'Sign-in with '+provider+' requires secure provider configuration.';return;}
     // A trusted authentication service initiates the provider-specific authorization
     // flow, validates state/PKCE, exchanges codes and issues a verified session.
-    const url=this.endpoint('auth/'+provider.toLowerCase()+'/start');
+    const url=this.endpoint('auth/'+(provider==='ChatGPT'?'openai':provider.toLowerCase())+'/start');
     window.location.assign(url.href);
   }
   close(){this.dialog?.remove();this.dialog=null;}
