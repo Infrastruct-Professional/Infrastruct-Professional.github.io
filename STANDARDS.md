@@ -33,3 +33,9 @@
 - Backend must use supported Shopify subscription/selling-plan capabilities, authenticate the customer, verify signed billing notifications and check subscription entitlements server-side. Support renewals, cancellation, past-due states, upgrades, downgrades and refunds with documented access rules. Never trust browser-supplied subscription status.
 - Plan cancellation or expiry must never alter or shut down already-deployed customer infrastructure. Customers own their deployments and may export their configuration.
 - Existing older `offers` API notes are superseded by the `plans` contract above.
+
+## Ephemeral runtime orchestration
+- `orchestrator.js` introduces a class-based, session-scoped runtime registry with create, manifest generation, and disposal. The workbench attaches a generated runtime manifest to exported plans and disposes local runtime sessions on Finish.
+- The current implementation generates **local plans only**. It does not spawn a remote backend, run server commands, configure external services, or guarantee erasure of browser caches, downloaded files or external logs.
+- JavaScript/webR can run browser-local calculations; server-side jobs, Shopify secrets, webhook processing and authenticated subscriptions require a separately authorized trusted executor or serverless backend.
+- Future remote adapters must use least-privilege, short-lived authorization, explicit operation approval, idempotency, verifiable results, timeouts, resource quotas, revocation and audit records. Never put provider secrets in a browser-generated manifest.

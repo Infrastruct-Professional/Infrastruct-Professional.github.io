@@ -1,3 +1,4 @@
+import { RuntimeOrchestrator } from './orchestrator.js';
 import { ShopifyCommerce } from './commerce.js';
 import { ServiceWorkbench } from './service.js';
 class InfrastructProfessional {
@@ -9,6 +10,8 @@ class InfrastructProfessional {
     this.lifecycle = { nextId: 1, roundTrips: 0, roundRobinCursor: 0, tasks: [], draining: false };
     this.register('lifecycle', this.lifecycle);
     this.register('state', this.state);
+    this.orchestrator=new RuntimeOrchestrator(this);
+    this.register('orchestrator',this.orchestrator.registry);
     this.services=new ServiceWorkbench(this);
     this.commerce=new ShopifyCommerce(this);
     this.register('commerce',this.commerce.registry);

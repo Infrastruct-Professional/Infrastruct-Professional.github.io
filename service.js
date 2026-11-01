@@ -35,7 +35,7 @@ export class ServiceWorkbench {
     const notesLabel=e('label',item.kind==='dns'?'Desired records (one per line: TYPE NAME VALUE)':'Requirements / environment',null,form);
     const notes=e('textarea',null,null,notesLabel);notes.rows=4;notes.maxLength=8000;notes.placeholder=item.kind==='dns'?'A @ 192.0.2.1':'Describe the intended outcome';
     const generate=e('button','Generate downloadable plan',null,form);generate.type='submit';
-    form.addEventListener('submit',event=>{event.preventDefault();const result={schema:'infrastruct.pro/workbench/v1',kind:item.kind,project:input.value.trim(),requirements:notes.value.trim(),generatedAt:new Date().toISOString(),status:'planning-only',notice:'No changes have been applied to any external service.'};if(item.kind==='dns'){result.records=result.requirements.split(/\n/).map(x=>x.trim()).filter(Boolean);result.instructions='Review records and authorize changes at your DNS provider. Never paste API tokens into this workstation.';}this.export(result);this.host.audit('service_plan_generated',{kind:item.kind});});
+    form.addEventListener('submit',event=>{event.preventDefault();const runtime=this.host.orchestrator.create(item.kind,{project:input.value.trim(),requirements:notes.value.trim()});const manifest=this.host.orchestrator.generate(runtime);const result={runtimeManifest:manifest,schema:'infrastruct.pro/workbench/v1',kind:item.kind,project:input.value.trim(),requirements:notes.value.trim(),generatedAt:new Date().toISOString(),status:'planning-only',notice:'No changes have been applied to any external service.'};if(item.kind==='dns'){result.records=result.requirements.split(/\n/).map(x=>x.trim()).filter(Boolean);result.instructions='Review records and authorize changes at your DNS provider. Never paste API tokens into this workstation.';}this.export(result);this.host.audit('service_plan_generated',{kind:item.kind});});
     input.focus();
   }
   export(result){
@@ -43,5 +43,6 @@ export class ServiceWorkbench {
     const button=this.host.element('button','Download JSON plan','export-plan',this.workspace);
     button.addEventListener('click',()=>{const blob=new Blob([JSON.stringify(this.output,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='infrastruct-'+this.output.kind+'-plan.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);this.host.audit('service_plan_exported',{kind:this.output.kind});});
   }
-  finish(){this.output=null;this.workspace.replaceChildren();this.host.state.history=[];this.host.state.windows=[];this.host.state.foreground=null;this.host.audit('workbench_session_finished');this.host.element('p','Session cleared. Exported files remain on your device. You may close this tab.',null,this.workspace);}
+  finish(){
+    this.host.orchestrator.disposeAll();this.output=null;this.workspace.replaceChildren();this.host.state.history=[];this.host.state.windows=[];this.host.state.foreground=null;this.host.audit('workbench_session_finished');this.host.element('p','Session cleared. Exported files remain on your device. You may close this tab.',null,this.workspace);}
 }
