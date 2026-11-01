@@ -72,3 +72,9 @@
 - Enterprise: `gid://shopify/Product/11005806510413`, proposed €199/month, draft.
 - These are ordinary Shopify **draft products** with one priced variant each, **not yet subscription selling plans**. They must not be represented as recurring billing until selling plans, a subscriptions app, and verified contract lifecycle are configured. Annual intervals and discount are still proposals.
 - The static website shows non-purchasable proposed plans with disabled subscribe controls. The merchant must approve publication and activation of recurring charges.
+
+## Subscription selling plan readiness
+- Verified through Shopify Admin API: `eligibleForSubscriptions=true`, `sellsSubscriptions=false` for the connected merchant store as of 2026-11-01.
+- Proposed annual prepayment prices with 15% discount: Starter €193.80/year, Professional €601.80/year, Enterprise €2,029.80/year. These are **proposals only**, not configured Shopify selling plans or authorized charges.
+- `plan-catalog.js` centralizes the three merchant product GIDs, feature descriptions and proposed monthly/annual prices; no secrets or payment controls are included. Do not infer access entitlements from this public catalogue.
+- Before billing activation: install/configure a supported subscription app, associate monthly and annual recurring selling plans with the three products, verify Shopify Payments and store eligibility, build verified checkout and contract lifecycle, and obtain final merchant approval for pricing and publication.

@@ -1,7 +1,9 @@
+import { PlanCatalog } from './plan-catalog.js';
 /** Shopify commerce adapter. Public configuration only; secrets and payment verification belong on a trusted backend. */
 export class ShopifyCommerce {
   constructor(host){
     this.host=host;
+    this.catalog=new PlanCatalog();
     this.registry={configuration:{functions:{},nested:{},instances:[]},checkout:{functions:{},nested:{},instances:[]}};
     this.config={storeDomain:'k0yrr9-zr.myshopify.com',apiEndpoint:'',checkoutMode:'hosted',enabled:false};
     this.registry.configuration.instances.push(this.config);
@@ -43,14 +45,10 @@ export class ShopifyCommerce {
     const status=e('p',this.config.enabled?'Connecting to Shopify…':'Subscription plans are being prepared. Shopify authentication and billing are not yet connected.','commerce-status',section);
     const list=e('div',null,'commerce-grid',section);
     if(!this.config.enabled){
-      const drafts=[
-        {name:'Starter',price:'€19 / month',summary:'For individuals and small projects',features:['Infrastructure and DNS planning','Software project manifests','Local exports']},
-        {name:'Professional',price:'€59 / month',summary:'For developers and businesses',features:['Starter planning capabilities','Advanced configuration workflows','Runtime orchestration planning']},
-        {name:'Enterprise',price:'€199 / month',summary:'For organizations and teams',features:['Professional planning capabilities','Team workflow planning','Advanced audit and architecture planning']}
-      ];
+      const drafts=this.catalog.publicPlans();
       for(const draft of drafts){
         const card=e('div',null,'commerce-card',list);
-        e('strong',draft.name,null,card);e('span',draft.price,null,card);e('small',draft.summary,null,card);
+        e('strong',draft.title,null,card);e('span',this.catalog.display(draft.monthlyCents)+' / month',null,card);e('small','Proposed annual billing: '+this.catalog.display(draft.annualCents)+' / year (15% discount)',null,card);e('small',draft.audience,null,card);
         const features=e('ul',null,'plan-features',card);for(const feature of draft.features)e('li',feature,null,features);
         const button=e('button','Subscription launching soon',null,card);button.disabled=true;
       }
