@@ -65,3 +65,10 @@
 - Recurring subscriptions must be modeled as Shopify products/variants with supported selling plans. Checkout must carry a valid selling plan ID and create a Shopify subscription contract. Billing renewals and failures must be managed by an authorized subscriptions app, with Shopify contract status verified server-side.
 - A customer profile should display verified plan, subscription state, renewal date and entitled workstation features, with authenticated customer management for upgrades, downgrades and cancellation when supported. Subscription access must never be inferred from a browser flag, product title, email alone or webhook signature alone.
 - The Shopify merchant's **Basic** plan is the merchant's Shopify account tier, not an Infrastruct Professional customer subscription tier. No customer plan names, prices or billing intervals have been set or published.
+
+## Shopify draft products (merchant-approved preparation)
+- Starter: `gid://shopify/Product/11005805887821`, proposed €19/month, draft.
+- Professional: `gid://shopify/Product/11005806379341`, proposed €59/month, draft.
+- Enterprise: `gid://shopify/Product/11005806510413`, proposed €199/month, draft.
+- These are ordinary Shopify **draft products** with one priced variant each, **not yet subscription selling plans**. They must not be represented as recurring billing until selling plans, a subscriptions app, and verified contract lifecycle are configured. Annual intervals and discount are still proposals.
+- The static website shows non-purchasable proposed plans with disabled subscribe controls. The merchant must approve publication and activation of recurring charges.

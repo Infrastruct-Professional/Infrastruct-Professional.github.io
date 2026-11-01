@@ -42,7 +42,20 @@ export class ShopifyCommerce {
     e('p','Subscribe for access to Infrastruct Professional tools. Shopify handles recurring billing; your infrastructure remains yours. Plan names, prices and limits will appear after connection.',null,section);
     const status=e('p',this.config.enabled?'Connecting to Shopify…':'Subscription plans are being prepared. Shopify authentication and billing are not yet connected.','commerce-status',section);
     const list=e('div',null,'commerce-grid',section);
-    if(!this.config.enabled){const card=e('div',null,'commerce-card',list);e('strong','Plans coming soon',null,card);e('small','Subscription tiers, prices and billing intervals have not yet been configured.',null,card);}
+    if(!this.config.enabled){
+      const drafts=[
+        {name:'Starter',price:'€19 / month',summary:'For individuals and small projects',features:['Infrastructure and DNS planning','Software project manifests','Local exports']},
+        {name:'Professional',price:'€59 / month',summary:'For developers and businesses',features:['Starter planning capabilities','Advanced configuration workflows','Runtime orchestration planning']},
+        {name:'Enterprise',price:'€199 / month',summary:'For organizations and teams',features:['Professional planning capabilities','Team workflow planning','Advanced audit and architecture planning']}
+      ];
+      for(const draft of drafts){
+        const card=e('div',null,'commerce-card',list);
+        e('strong',draft.name,null,card);e('span',draft.price,null,card);e('small',draft.summary,null,card);
+        const features=e('ul',null,'plan-features',card);for(const feature of draft.features)e('li',feature,null,features);
+        const button=e('button','Subscription launching soon',null,card);button.disabled=true;
+      }
+      e('p','Prices and capabilities are proposed and subject to final approval. Recurring billing and subscription access are not yet active.','commerce-status',section);
+    }
     if(!this.config.enabled)return;
     this.getOffers().then(offers=>{
       list.replaceChildren();status.textContent=offers.length?'Available subscription plans':'No subscription plans are currently published.';
