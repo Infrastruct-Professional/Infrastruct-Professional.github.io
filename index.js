@@ -1,3 +1,4 @@
+import { WhoisLookupService } from './whois-lookup-service.js';
 import { EncryptedPlanStorage } from './encrypted-plan-storage.js';
 import { HostingProviderService } from './hosting-provider-service.js';
 import { DNSProviderService } from './dns-provider-service.js';

@@ -80,10 +80,10 @@ export class InfrastructureWorkbench {
     const servicesMenu=this.el('nav',null,'workbench-services-menu',content);
     servicesMenu.setAttribute('aria-label','Interactive services');
     const workspace=this.el('div',null,'workbench-services-workspace',content);
-    const services=[['Secure Shell Booth',()=>this.host.shellBooth.mount(workspace)],['Encoders',()=>this.host.encoding.mount(workspace)],['DNS Providers',()=>this.host.dnsProviders.mount(workspace)],['Web Hosting Providers',()=>this.host.hostingProviders.mount(workspace)]];
+    const services=[['WHOIS Lookup',()=>this.host.whois.mount(workspace),'Free'],['Encoders',()=>this.host.encoding.mount(workspace),'Free'],['DNS Providers',()=>this.host.dnsProviders.mount(workspace),'Free'],['Web Hosting Providers',()=>this.host.hostingProviders.mount(workspace),'Free'],['Secure Shell Booth',()=>this.host.shellBooth.mount(workspace),'Free']];
     const buttons=[];
-    for(const [label,render] of services){
-      const button=this.el('button',label,'workbench-service-tab',servicesMenu);
+    for(const [label,render,tier] of services){
+      const button=this.el('button',label+' · '+tier,'workbench-service-tab',servicesMenu);
       button.type='button';button.setAttribute('aria-pressed','false');buttons.push(button);
       button.addEventListener('click',()=>{
         workspace.replaceChildren();render();
