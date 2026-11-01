@@ -26,6 +26,7 @@ class InfrastructProfessional {
     this.planStorage=new EncryptedPlanStorage(this);
     this.hostingProviders=new HostingProviderService(this);
     this.dnsProviders=new DNSProviderService(this);
+    this.whois=new WhoisLookupService(this);
     this.encoding=new EncodingService(this);
     this.shellBooth=new SecureShellBooth(this);
     this.infrastructure=new InfrastructureWorkbench(this);

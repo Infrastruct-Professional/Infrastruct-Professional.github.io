@@ -91,7 +91,7 @@ export class InfrastructureWorkbench {
         this.host.audit('service_selected',{service:label});
       });
     }
-    this.el('p','Choose a service to open its workspace.','workbench-intro',workspace);
+    buttons[0]?.click();
     this.el('p','These are proposed service categories and review scopes, not a claim that managed delivery or infrastructure provisioning is currently available.','workbench-intro',content);
   }
 }
