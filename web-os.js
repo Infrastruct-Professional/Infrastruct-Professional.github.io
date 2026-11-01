@@ -37,7 +37,8 @@ class RuntimeSystem {
         this.host.element('small',plan.audience,null,card);
         const list=this.host.element('ul',null,null,card);
         for(const feature of plan.features)this.host.element('li',feature,null,list);
-        const button=this.host.element('button','Coming soon',null,card);button.disabled=true;
+        if(plan.id==='free'){this.host.element('small','Available now · No subscription required',null,card);const button=this.host.element('button','Explore free services',null,card);button.type='button';button.addEventListener('click',()=>this.open('Services','Free infrastructure services and tools.'));}
+        else{const button=this.host.element('button','Coming soon',null,card);button.disabled=true;}
       }
     }catch(error){status.textContent='Plan catalogue is temporarily unavailable.';}
   }
