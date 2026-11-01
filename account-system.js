@@ -1,6 +1,6 @@
 /** Customer account controls. Authentication must be verified by a trusted server. */
 export class AccountSystem {
-  constructor(host){this.host=host;this.registry={session:{instances:[],functions:{},nested:{},events:[]}};this.config={endpoint:'',enabled:false};this.authenticated=false;this.menu=null;this.dialog=null;}
+  constructor(host){this.host=host;this.registry={session:{instances:[],functions:{},nested:{},events:[]}};this.config={endpoint:'',enabled:false};this.authenticated=false;this.menu=null;this.dialog=null;this.providers=['GitHub','Google','Microsoft','Apple'];}
   mount(menu){this.menu=menu;this.renderMenu();if(this.config.enabled)this.refresh();}
   renderMenu(){
     this.actions?.remove();
@@ -22,9 +22,22 @@ export class AccountSystem {
     const header=this.host.element('div',null,'account-dialog-header',this.dialog);
     this.host.element('strong',label,null,header);
     const close=this.host.element('button','×',null,header);close.type='button';close.setAttribute('aria-label','Close');close.addEventListener('click',()=>this.close());
-    this.host.element('p',this.config.enabled?'Account access requires verification by the secure identity provider.':'Secure account registration and sign-in are being prepared. No accounts can be created or authenticated yet.',null,this.dialog);
-    if(this.config.enabled){const action=this.host.element('button','Continue securely',null,this.dialog);action.addEventListener('click',()=>{const url=this.endpoint(label==='Sign up'?'register':'login');window.location.assign(url.href);});}
+    this.host.element('p',this.config.enabled?'Continue with an identity provider.':'Choose an identity provider. Connections are awaiting application registration and a secure authentication service.',null,this.dialog);
+    const choices=this.host.element('div',null,'account-provider-list',this.dialog);
+    for(const provider of this.providers){
+      const button=this.host.element('button','Continue with '+provider,'account-provider-button',choices);
+      button.type='button';button.addEventListener('click',()=>this.authenticate(provider));
+    }
+    this.status=this.host.element('p',this.config.enabled?'':'Sign-in is not yet active. No credentials are requested or stored here.','account-provider-status',this.dialog);
     close.focus();this.host.audit('account_dialog_open',{action:label});
+  }
+  authenticate(provider){
+    if(!this.providers.includes(provider))return;
+    if(!this.config.enabled){if(this.status)this.status.textContent=provider+' sign-in will be available after secure provider configuration.';return;}
+    // A trusted authentication service initiates the provider-specific authorization
+    // flow, validates state/PKCE, exchanges codes and issues a verified session.
+    const url=this.endpoint('auth/'+provider.toLowerCase()+'/start');
+    window.location.assign(url.href);
   }
   close(){this.dialog?.remove();this.dialog=null;}
   async signOut(){
