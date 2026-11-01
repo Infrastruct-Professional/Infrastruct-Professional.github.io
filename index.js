@@ -110,8 +110,11 @@ body:has(.navmobile) .recent-screen .appcard:active{transform:scale(.96)}
       const brandMenu=this.element('section',null,'brand-corner-menu',this.root);
       brandMenu.id='brand-corner-menu';brandMenu.setAttribute('aria-label','Infrastruct Professional menu');
       brandMenu.setAttribute('aria-hidden','true');brandButton.setAttribute('aria-controls',brandMenu.id);
-      const plans=this.element('button','Plans','brand-menu-item',brandMenu);
-      plans.type='button';plans.addEventListener('click',()=>{this.toggleBrandMenu(false);this.webOS.open('Plans');this.audit('brand_menu_select',{label:'Plans'});});
+      for(const label of ['Plans','Tools','Services']){
+        const item=this.element('button',label,'brand-menu-item',brandMenu);
+        item.type='button';
+        item.addEventListener('click',()=>{this.toggleBrandMenu(false);this.webOS.open(label);this.audit('brand_menu_select',{label});});
+      }
       this.brandButton=brandButton;this.brandMenu=brandMenu;
       brandButton.addEventListener('click',event=>{event.stopPropagation();this.toggleStartMenu(false);this.toggleBrandMenu(!brandMenu.classList.contains('is-open'));});
       const main=this.element('main',null,'minimal-main',this.root);
