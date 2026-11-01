@@ -7,8 +7,9 @@ export class PublicIPSystem {
     window.addEventListener('online',()=>this.fetchAddress());
   }
   mount(header){
-    this.label=this.host.element('span','Public:','public-ip-label',header);
-    this.button=this.host.element('button','Checking…','public-ip-value is-pending',header);
+    const field=this.host.element('span',null,'public-ip-field',header);
+    this.label=this.host.element('span','Public:','public-ip-label',field);
+    this.button=this.host.element('button','Checking…','public-ip-value is-pending',field);
     this.button.type='button';this.button.disabled=true;
     this.button.setAttribute('aria-label','Public IP address; click to copy');
     this.button.setAttribute('aria-live','polite');
