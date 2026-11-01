@@ -5,7 +5,7 @@ export class AccountSystem {
   renderMenu(){
     this.actions?.remove();
     this.actions=this.host.element('div',null,'account-menu-actions',this.menu);
-    for(const label of this.authenticated?['Sign out']:['Sign in','Sign up']){
+    for(const label of this.authenticated?['Sign out']:['Sign in / Sign up']){
       const button=this.host.element('button',label,'brand-menu-item',this.actions);
       button.type='button';button.addEventListener('click',()=>{this.host.toggleBrandMenu(false);if(label==='Sign out')this.signOut();else this.open(label);});
     }
