@@ -212,7 +212,7 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
   close(){if(this.window){this.window.remove();this.window=null;}}
   showExisting(name){this.restoring=true;try{this.open(name);}finally{this.restoring=false;}}
   appSwitcher(){
-    if(this.environment.mode==='desktop')return;this.close();this.state.recent=true;const w=this.element('section',null,'window mobile-application recent-screen',this.root);this.window=w;w.setAttribute('aria-label','Open applications');
+    if(this.environment.mode==='desktop')return;this.webOS.active?.dismissRecents?.();this.close();this.state.recent=true;const w=this.element('section',null,'window mobile-application recent-screen',this.root);this.window=w;w.setAttribute('aria-label','Open applications');
     const bar=this.element('div',null,'windowbar',w);this.element('strong','Open applications',null,bar);
     const cards=this.element('div',null,'windowbody appcards',w);
     const names=[...this.state.windows];
@@ -225,7 +225,7 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
     });
   }
   back(){if(this.environment.mode==='desktop')return this.close();if(this.state.recent){this.state.recent=false;return this.state.foreground?this.showExisting(this.state.foreground):this.close();}const previous=this.state.history.pop();if(previous)return this.showExisting(previous);this.hide();}
-  hide(){this.close();this.state.recent=false;this.state.foreground=null;this.audit('home');}
+  hide(){this.close();this.state.recent=false;this.state.foreground=null;this.webOS.active?.home?.();this.audit('home');}
   onResize(){const previous=this.environment.mode;this.environment=this.detect();this.audit('resize',{width:innerWidth,height:innerHeight});if(previous!==this.environment.mode){const recent=this.state.recent;this.toggleBrandMenu(false);document.removeEventListener('pointerdown',this.onStartOutside);document.removeEventListener('keydown',this.onStartEscape);this.webOS.active?.unmount();this.account.unmount();this.cookies.unmount();this.root.remove();this.close();this.render();if(this.environment.mode!=='desktop'){if(recent)this.appSwitcher();else if(this.state.foreground)this.showExisting(this.state.foreground);}}}
   audit(type,detail={}) {if(!this.state)return;this.state.events.push({type,time:new Date().toISOString(),detail});if(this.state.events.length>300)this.state.events.shift();this.analyze();}
   async startR(){

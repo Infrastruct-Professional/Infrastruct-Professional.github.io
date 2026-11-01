@@ -90,11 +90,11 @@ export class TabletSystem extends RuntimeSystem {
   home(){this.windows.forEach(w=>w.element.hidden=true);this.recentPanel.hidden=true;this.record('minimize',{home:true});}
   dismissRecents(){if(this.recentPanel&&!this.recentPanel.hidden){this.recentPanel.hidden=true;this.record('recents',{dismissed:true});}}
   back(){if(!this.recentPanel.hidden){this.recentPanel.hidden=true;return;}this.home();}
-  recents(){this.recentPanel.replaceChildren();if(this.windows.size===0){this.home();this.record('recents',{count:0});return;}this.recentPanel.hidden=false;for(const win of [...this.windows.values()].reverse()){
+  recents(){this.recentPanel.replaceChildren();if(this.windows.size===0){this.home();this.host.hide?.();this.record('recents',{count:0});return;}this.recentPanel.hidden=false;for(const win of [...this.windows.values()].reverse()){
     const card=this.host.element('button',win.name,'os-recent-card',this.recentPanel);let x=null;
     card.addEventListener('click',()=>{this.recentPanel.hidden=true;this.windows.forEach(w=>w.element.hidden=true);this.focus(win.id);});
     card.addEventListener('touchstart',e=>{x=e.changedTouches[0].clientX;},{passive:true});
-    card.addEventListener('touchend',e=>{if(x!==null&&Math.abs(e.changedTouches[0].clientX-x)>70){this.close(win.id);this.recents();}},{passive:true});
+    card.addEventListener('touchend',e=>{if(x!==null&&Math.abs(e.changedTouches[0].clientX-x)>70){this.close(win.id);if(this.windows.size===0){win.element.remove();this.home();this.host.hide?.();}else this.recents();}},{passive:true});
   }this.record('recents',{count:this.windows.size});}
   unmount(){this.nav?.remove();this.recentPanel?.remove();super.unmount();}
 }
