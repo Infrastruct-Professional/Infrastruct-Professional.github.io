@@ -8,6 +8,7 @@ class InfrastructProfessional {
     this.registry = {};
     this.register('constructor', { started: Date.now() });
     this.environment = this.detect();
+    this.frontPageMinimal=true;
     this.state = { active: 'Overview', menu: false, windows: [], events: [], analytics: null, foreground:null, recent:false, history:[] };
     this.lifecycle = { nextId: 1, roundTrips: 0, roundRobinCursor: 0, tasks: [], draining: false };
     this.register('lifecycle', this.lifecycle);
@@ -76,12 +77,24 @@ body:has(.navmobile) .recent-screen .appcard:active{transform:scale(.96)}
 
 .service-workbench{padding:32px clamp(18px,5vw,70px);border-top:1px solid #ffffff20;max-width:1300px;margin:auto}.service-workbench h2{font-size:clamp(26px,4vw,42px);margin:10px 0}.service-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px;margin:25px 0}.service-card{display:flex;flex-direction:column;align-items:flex-start;gap:9px;text-align:left;min-height:170px;padding:22px;background:#11253a;border:1px solid #ffffff25;transition:transform .15s,background .15s}.service-card:hover{transform:translateY(-2px);background:#18334e}.service-card small{color:#a5c4d6}.service-icon{color:#5bd8ff;display:inline-flex}.service-icon svg{display:block}.service-workspace{max-width:720px;margin-top:22px}.service-workspace form{display:grid;gap:15px}.service-workspace label{display:grid;gap:6px}.service-workspace input,.service-workspace textarea{width:100%;font:inherit;color:inherit;background:#0b1b2b;border:1px solid #64859a;border-radius:10px;padding:12px}.service-workspace input:focus-visible,.service-workspace textarea:focus-visible,.service-card:focus-visible{outline:3px solid #62d8ff;outline-offset:2px}.session-exit{margin-top:8px}.export-plan{margin-top:15px;background:#174b64}@media(prefers-reduced-motion:reduce){.service-card{transition:none}.service-card:hover{transform:none}}
 
-.subscription-profile{max-width:1300px;margin:auto;padding:24px clamp(18px,5vw,70px) 48px;border-top:1px solid #ffffff20}.subscription-details{display:grid;gap:8px}.commerce-section{max-width:1300px;margin:auto;padding:24px clamp(18px,5vw,70px) 48px;border-top:1px solid #ffffff20}.commerce-section h2{margin:8px 0}.commerce-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:18px}.commerce-card{display:flex;flex-direction:column;align-items:flex-start;gap:9px;background:#102438;border:1px solid #ffffff25;border-radius:12px;padding:18px}.commerce-card small,.commerce-status{color:#b0c7d7}.plan-features{padding-left:18px;line-height:1.65}.commerce-card button:disabled{opacity:.55;cursor:not-allowed}.execution-approval{border-top:1px solid #ffffff25;margin-top:24px;padding-top:15px}.execution-review{display:grid;gap:12px;margin-top:12px}.execution-review pre{white-space:pre-wrap;overflow-wrap:anywhere}.execution-review label{display:flex;gap:10px;align-items:center}.execution-review input{width:auto}.execution-review button{justify-self:start}.execution-approval button:disabled{opacity:.45;cursor:not-allowed}
+.subscription-profile{max-width:1300px;margin:auto;padding:24px clamp(18px,5vw,70px) 48px;border-top:1px solid #ffffff20}.subscription-details{display:grid;gap:8px}.commerce-section{max-width:1300px;margin:auto;padding:24px clamp(18px,5vw,70px) 48px;border-top:1px solid #ffffff20}.commerce-section h2{margin:8px 0}.commerce-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:18px}.commerce-card{display:flex;flex-direction:column;align-items:flex-start;gap:9px;background:#102438;border:1px solid #ffffff25;border-radius:12px;padding:18px}.commerce-card small,.commerce-status{color:#b0c7d7}.plan-features{padding-left:18px;line-height:1.65}.commerce-card button:disabled{opacity:.55;cursor:not-allowed}.execution-approval{border-top:1px solid #ffffff25;margin-top:24px;padding-top:15px}.execution-review{display:grid;gap:12px;margin-top:12px}.execution-review pre{white-space:pre-wrap;overflow-wrap:anywhere}.execution-review label{display:flex;gap:10px;align-items:center}.execution-review input{width:auto}.execution-review button{justify-self:start}.execution-approval button:disabled{opacity:.45;cursor:not-allowed}.minimal-banner{min-height:62px}.minimal-main{min-height:calc(100dvh - 116px)}.minimal-footer{min-height:54px}.runtime-internal{display:none!important}
 `;
   }
   render() {
     this.style();
     this.root=this.element('div',null,'app',document.body);
+    if(this.frontPageMinimal){
+      // Temporary presentation mode: preserve the banner/footer shells, hide all their contents and the page body.
+      const header=this.element('header',null,'minimal-banner',this.root);
+      header.setAttribute('aria-label','Infrastruct Professional banner');
+      const main=this.element('main',null,'minimal-main',this.root);
+      main.setAttribute('aria-label','Infrastruct Professional');
+      const footer=this.element('footer',null,'minimal-footer',this.root);
+      footer.setAttribute('aria-label','Infrastruct Professional footer');
+      this.runtimeLabel=this.element('span',null,'runtime-internal',footer);
+      this.runtimeLabel.hidden=true;
+      return;
+    }
     const header=this.element('header',null,null,this.root);
     const brand=this.element('div',null,'brand',header);brand.append('⬡ INFRASTRUCT ',this.element('b','PROFESSIONAL'));
     const actions=this.element('div',null,'actions',header);
