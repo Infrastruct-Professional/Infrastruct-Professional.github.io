@@ -3,7 +3,7 @@ class InfrastructProfessional {
     this.registry = {};
     this.register('constructor', { started: Date.now() });
     this.environment = this.detect();
-    this.state = { active: 'Overview', menu: false, windows: [], events: [], analytics: null };
+    this.state = { active: 'Overview', menu: false, windows: [], events: [], analytics: null, foreground:null, recent:false, history:[] };
     this.lifecycle = { nextId: 1, roundTrips: 0, roundRobinCursor: 0, tasks: [], draining: false };
     this.register('lifecycle', this.lifecycle);
     this.register('state', this.state);
@@ -38,16 +38,27 @@ class InfrastructProfessional {
   }
   detect() {
     const ua = navigator.userAgent;
-    const tablet = /iPad|Tablet/i.test(ua) || (navigator.maxTouchPoints > 1 && innerWidth >= 700);
-    const mobile = !tablet && (/Android|iPhone|Mobile/i.test(ua) || innerWidth < 650);
+    const touchDevice=/Android|iPad|iPhone|Mobile/i.test(ua)||(navigator.maxTouchPoints>1&&/Macintosh/i.test(ua));
+    const tablet=touchDevice&&innerWidth>=600&&innerHeight>=480;
+    const mobile=touchDevice&&!tablet;
     const browser = /Firefox/i.test(ua) ? 'Firefox' : /Edg/i.test(ua) ? 'Edge' : /Chrome/i.test(ua) ? 'Chrome' : /Safari/i.test(ua) ? 'Safari' : 'Other';
     const os = /Windows/i.test(ua) ? 'Windows' : /Android/i.test(ua) ? 'Android' : /iPad|iPhone/i.test(ua) ? 'iOS' : /Mac/i.test(ua) ? 'macOS' : /Linux/i.test(ua) ? 'Linux' : 'Other';
     return { mode: mobile ? 'mobile' : tablet ? 'tablet' : 'desktop', browser, os, width: innerWidth, height: innerHeight };
   }
   element(tag, text, className, parent) { const e=document.createElement(tag); if(text!==null)e.textContent=text; if(className)e.className=className; if(parent)parent.append(e); return e; }
   style() {
-    const s=this.element('style',null,null,document.head);
-    s.textContent=`:root{font:15px/1.5 system-ui,Arial,sans-serif;color:#eaf6ff;background:#080f1a}*{box-sizing:border-box}body{margin:0;min-height:100dvh;background:radial-gradient(ellipse at 80% 10%,#16415b88,transparent 48%),#080f1a}button{font:inherit;cursor:pointer;color:inherit;border:1px solid #ffffff28;background:#ffffff0b;border-radius:12px;padding:9px 16px}button:hover{background:#43d3ff1e}header{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:18px clamp(18px,4vw,70px);border-bottom:1px solid #ffffff19;backdrop-filter:blur(15px)}.brand{font-size:13px;letter-spacing:.18em;font-weight:800}.brand b{color:#58d9ff}.status{font-size:12px;color:#89a9be}.actions{display:flex;gap:9px;align-items:center}.shell{min-height:calc(100dvh - 145px);padding:clamp(30px,7vw,90px);display:flex;align-items:center}.hero{max-width:1000px}.eyebrow{letter-spacing:.35em;text-transform:uppercase;color:#5ed7ff;font-size:12px}h1{font-size:clamp(45px,8vw,105px);letter-spacing:-.07em;line-height:1.02;margin:20px 0}h1 span{color:#5bd8ff}p{color:#a4bed0;font-size:clamp(16px,1.9vw,20px);max-width:650px}.tiles{display:flex;flex-wrap:wrap;gap:12px;margin-top:35px}.tile{min-width:145px;text-align:left}.window{position:fixed;top:18%;left:20%;width:min(600px,88vw);max-height:65vh;overflow:auto;border:1px solid #ffffff25;border-radius:18px;background:#102032ed;box-shadow:0 25px 100px #000a;backdrop-filter:blur(24px);z-index:10}.windowbar{display:flex;justify-content:space-between;align-items:center;padding:13px 18px;border-bottom:1px solid #ffffff22}.windowbody{padding:22px}.windowbody pre{white-space:pre-wrap;word-break:break-word;font-size:12px;color:#a5d3e8}.windowbar button{padding:2px 9px}footer{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;padding:15px clamp(18px,4vw,70px);font-size:12px;color:#86a3b6;border-top:1px solid #ffffff19}.navmobile{display:none}.appcards{display:grid;gap:12px}.appcard{width:100%;padding:20px;text-align:left;touch-action:pan-y;background:#1a3554;border:1px solid #ffffff30;border-radius:16px}.appcard small{display:block;color:#8ebbd4}.muted{color:#86a3b6}@media(max-width:760px){header{padding:15px}.status{display:none}.shell{min-height:calc(100dvh - 175px);padding:32px 23px}.window{left:4vw;top:12vh;width:92vw;max-height:70vh}.navmobile{display:flex;position:fixed;bottom:0;width:100%;justify-content:space-around;padding:10px;background:#0c1b2bf5;z-index:20}.navmobile button{border:0;background:transparent;font-size:21px}footer{padding-bottom:70px}.brand{letter-spacing:.09em;font-size:12px}}`;
+    const s=this.styleNode||(this.styleNode=this.element('style',null,null,document.head));
+    s.textContent=`:root{font:15px/1.5 system-ui,Arial,sans-serif;color:#eaf6ff;background:#080f1a}*{box-sizing:border-box}body{margin:0;min-height:100dvh;background:radial-gradient(ellipse at 80% 10%,#16415b88,transparent 48%),#080f1a}button{font:inherit;cursor:pointer;color:inherit;border:1px solid #ffffff28;background:#ffffff0b;border-radius:12px;padding:9px 16px}button:hover{background:#43d3ff1e}header{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:18px clamp(18px,4vw,70px);border-bottom:1px solid #ffffff19;backdrop-filter:blur(15px)}.brand{font-size:13px;letter-spacing:.18em;font-weight:800}.brand b{color:#58d9ff}.status{font-size:12px;color:#89a9be}.actions{display:flex;gap:9px;align-items:center}.shell{min-height:calc(100dvh - 145px);padding:clamp(30px,7vw,90px);display:flex;align-items:center}.hero{max-width:1000px}.eyebrow{letter-spacing:.35em;text-transform:uppercase;color:#5ed7ff;font-size:12px}h1{font-size:clamp(45px,8vw,105px);letter-spacing:-.07em;line-height:1.02;margin:20px 0}h1 span{color:#5bd8ff}p{color:#a4bed0;font-size:clamp(16px,1.9vw,20px);max-width:650px}.tiles{display:flex;flex-wrap:wrap;gap:12px;margin-top:35px}.tile{min-width:145px;text-align:left}.window{position:fixed;top:18%;left:20%;width:min(600px,88vw);max-height:65vh;overflow:auto;border:1px solid #ffffff25;border-radius:18px;background:#102032ed;box-shadow:0 25px 100px #000a;backdrop-filter:blur(24px);z-index:10}.windowbar{display:flex;justify-content:space-between;align-items:center;padding:13px 18px;border-bottom:1px solid #ffffff22}.windowbody{padding:22px}.windowbody pre{white-space:pre-wrap;word-break:break-word;font-size:12px;color:#a5d3e8}.windowbar button{padding:2px 9px}footer{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;padding:15px clamp(18px,4vw,70px);font-size:12px;color:#86a3b6;border-top:1px solid #ffffff19}.navmobile{display:none}.appcards{display:grid;gap:12px}.appcard{width:100%;padding:20px;text-align:left;touch-action:pan-y;background:#1a3554;border:1px solid #ffffff30;border-radius:16px}.appcard small{display:block;color:#8ebbd4}.muted{color:#86a3b6}@media(max-width:760px){header{padding:15px}.status{display:none}.shell{min-height:calc(100dvh - 175px);padding:32px 23px}.window{left:4vw;top:12vh;width:92vw;max-height:70vh}.navmobile{display:flex;position:fixed;bottom:0;width:100%;justify-content:space-around;padding:10px;background:#0c1b2bf5;z-index:20}.navmobile button{border:0;background:transparent;font-size:21px}footer{padding-bottom:70px}.brand{letter-spacing:.09em;font-size:12px}}
+/* Adaptive Android-inspired controls apply only when the mobile navigation exists. */
+body:has(.navmobile) .navmobile{display:flex;position:fixed;z-index:30;bottom:0;left:0;right:0;height:calc(60px + env(safe-area-inset-bottom));padding:4px 10px env(safe-area-inset-bottom);align-items:center;justify-content:space-around;background:#0b1a2bef;backdrop-filter:blur(20px);border-top:1px solid #ffffff24}
+body:has(.navmobile) .navmobile button{border:0;background:transparent;min-height:44px;min-width:54px;font-size:25px}
+body:has(.navmobile) .mobile-application{inset:60px 0 calc(60px + env(safe-area-inset-bottom));width:auto;max-height:none;overflow:auto;border:0;border-radius:0;box-shadow:none;background:#0c192af7}
+body:has(.navmobile) .mobile-application .windowbody{padding:24px;max-width:1050px;margin:auto}
+body:has(.navmobile) .recent-screen .appcards{display:flex;flex-direction:column;align-items:center;perspective:900px;gap:14px}
+body:has(.navmobile) .recent-screen .appcard{width:min(96%,480px);min-height:120px;transform:rotateX(3deg);box-shadow:0 16px 40px #0008;transition:transform .2s}
+body:has(.navmobile) .recent-screen .appcard:active{transform:scale(.96)}
+@media(min-width:600px){body:has(.navmobile) .navmobile{top:60px;bottom:0;right:auto;width:76px;height:auto;flex-direction:column;justify-content:center;gap:20px;padding:12px 5px;border-top:0;border-right:1px solid #ffffff24}body:has(.navmobile) .mobile-application{inset:60px 0 0 76px}body:has(.navmobile) .recent-screen .appcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));max-width:900px;margin:auto}body:has(.navmobile) .shell,body:has(.navmobile) footer{margin-left:76px}}
+`;
   }
   render() {
     this.style();
@@ -75,8 +86,9 @@ class InfrastructProfessional {
   action(parent,label,callback,cls) {const b=this.element('button',label,cls,parent);b.addEventListener('click',()=>{this.audit('action',{label});callback();});return b;}
   open(name) {
     this.close();
+    if(this.environment.mode!=='desktop'){this.state.history.push(this.state.foreground);this.state.foreground=name;this.state.recent=false;}
     this.state.windows = this.state.windows.filter(x=>x!==name);
-    this.state.windows.push(name);const w=this.element('section',null,'window',this.root);w.setAttribute('role','dialog');w.setAttribute('aria-label',name);this.window=w;
+    this.state.windows.push(name);const w=this.element('section',null,'window',this.root);w.setAttribute('role','dialog');w.setAttribute('aria-label',name);this.window=w;if(this.environment.mode!=='desktop')w.classList.add('mobile-application');
     const bar=this.element('div',null,'windowbar',w);this.element('strong',name,null,bar);if(this.environment.mode==='desktop')this.action(bar,'×',()=>this.close());
     const body=this.element('div',null,'windowbody',w);
     const descriptions={Overview:'Infrastruct Professional is a modular technology and infrastructure organization.',Architecture:'index.html → index.js. JavaScript generates HTML and CSS at runtime. index.R is loaded into webR for browser-side auditing and statistics. All functional components belong to class registries.',Runtime:'Environment detection, class registries, session state and modular UI lifecycle are active.',System:'Client runtime and device environment.',Audit:'Session event registry and statistical analysis.',Applications:'Open application cards and navigation context.'};
@@ -87,7 +99,7 @@ class InfrastructProfessional {
   }
   close(){if(this.window){this.window.remove();this.window=null;}}
   appSwitcher(){
-    this.close();const w=this.element('section',null,'window',this.root);this.window=w;w.setAttribute('aria-label','Open applications');
+    if(this.environment.mode==='desktop')return;this.close();this.state.recent=true;const w=this.element('section',null,'window mobile-application recent-screen',this.root);this.window=w;w.setAttribute('aria-label','Open applications');
     const bar=this.element('div',null,'windowbar',w);this.element('strong','Open applications',null,bar);
     const cards=this.element('div',null,'windowbody appcards',w);
     const names=[...this.state.windows];
@@ -99,9 +111,9 @@ class InfrastructProfessional {
       card.addEventListener('touchend',e=>{if(Math.abs(e.changedTouches[0].clientX-start)>75){this.state.windows=this.state.windows.filter(x=>x!==name);this.audit('application_swiped',{name});this.appSwitcher();}},{passive:true});
     });
   }
-  back(){this.close();}
-  hide(){this.close();}
-  onResize(){const previous=this.environment.mode;this.environment=this.detect();this.audit('resize',{width:innerWidth,height:innerHeight});if(previous!==this.environment.mode){this.root.remove();this.close();this.render();}}
+  back(){if(this.environment.mode==='desktop')return this.close();if(this.state.recent){this.state.recent=false;return this.state.foreground?this.open(this.state.foreground):this.close();}const previous=this.state.history.pop();if(previous)return this.open(previous);this.hide();}
+  hide(){this.close();this.state.recent=false;this.state.foreground=null;this.audit('home');}
+  onResize(){const previous=this.environment.mode;this.environment=this.detect();this.audit('resize',{width:innerWidth,height:innerHeight});if(previous!==this.environment.mode){this.root.remove();this.close();this.render();if(this.environment.mode!=='desktop'&&this.state.foreground)this.open(this.state.foreground);}}
   audit(type,detail={}) {if(!this.state)return;this.state.events.push({type,time:new Date().toISOString(),detail});if(this.state.events.length>300)this.state.events.shift();this.analyze();}
   async startR(){
     try{
