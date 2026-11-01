@@ -1,4 +1,5 @@
-# Browser-side webR analysis foundation; never executed by GitHub Pages itself.
+# Infrastruct Professional — browser-side audit and statistical runtime
 infra_audit <- function(events) {
-  list(event_count = length(events), timestamp = as.character(Sys.time()))
+  types <- if (length(events)) vapply(events, function(e) as.character(e$type), character(1)) else character()
+  list(total = length(types), frequencies = as.list(table(types)), generated_at = as.character(Sys.time()))
 }
