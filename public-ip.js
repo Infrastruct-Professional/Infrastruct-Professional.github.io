@@ -1,16 +1,50 @@
-// Client-side public IP display; ipify returns the visitor's public address only.
+// Browser-side public IP status, clipboard action and connectivity feedback.
 export class PublicIPSystem {
-  constructor(host){this.host=host;this.registry={fetch:{instances:[],functions:{},nested:{},events:[]}};this.label=null;this.address=null;}
-  mount(header){this.label=this.host.element('span','Public: checking…','public-ip-label',header);this.label.setAttribute('aria-live','polite');this.fetchAddress();}
+  constructor(host){
+    this.host=host;this.registry={fetch:{instances:[],functions:{},nested:{},events:[]},copy:{instances:[],functions:{},nested:{},events:[]}};
+    this.label=null;this.button=null;this.address=null;this.requestId=0;
+    window.addEventListener('offline',()=>this.offline());
+    window.addEventListener('online',()=>this.fetchAddress());
+  }
+  mount(header){
+    this.label=this.host.element('span','Public:','public-ip-label',header);
+    this.button=this.host.element('button','Checking…','public-ip-value is-pending',header);
+    this.button.type='button';this.button.disabled=true;
+    this.button.setAttribute('aria-label','Public IP address; click to copy');
+    this.button.setAttribute('aria-live','polite');
+    this.button.addEventListener('click',()=>this.copyAddress());
+    if(navigator.onLine===false)this.offline();else this.fetchAddress();
+  }
+  async copyAddress(){
+    if(!this.address||!this.button||this.button.disabled)return;
+    try{
+      await navigator.clipboard.writeText(this.address);
+      this.button.title='Copied to clipboard';
+      this.registry.copy.events.push({status:'copied'});this.host.audit('public_ip_copied');
+    }catch(error){this.button.title='Clipboard permission denied';this.host.audit('public_ip_copy_failed');}
+  }
+  offline(){
+    this.requestId++;this.address=null;
+    if(this.button?.isConnected){this.button.textContent='Disconnected';this.button.className='public-ip-value is-offline';this.button.disabled=true;this.button.title='Connection lost';}
+    this.registry.fetch.events.push({status:'offline'});this.host.audit('public_ip_offline');
+  }
   async fetchAddress(){
+    const request=++this.requestId;
+    if(this.button?.isConnected){this.button.textContent='Checking…';this.button.className='public-ip-value is-pending';this.button.disabled=true;}
     try{
       const response=await fetch('https://api64.ipify.org?format=json',{cache:'no-store'});
       if(!response.ok)throw new Error('IP service unavailable');
-      const data=await response.json();const ip=data?.ip;
+      const data=await response.json(),ip=data?.ip;
       if(typeof ip!=='string'||!/^([0-9a-fA-F:.]+)$/.test(ip)||ip.length>45)throw new Error('Invalid IP response');
+      if(request!==this.requestId)return;
       this.address=ip;const version=ip.includes(':')?'IPv6':'IPv4';
-      if(this.label?.isConnected)this.label.textContent=`Public: ${ip}`;
+      if(this.button?.isConnected){this.button.textContent=ip;this.button.className='public-ip-value is-online';this.button.disabled=false;this.button.title='Click to copy public IP address';}
       this.registry.fetch.events.push({status:'success',version});this.host.audit('public_ip_resolved',{version});
-    }catch(error){if(this.label?.isConnected)this.label.textContent='Public: unavailable';this.registry.fetch.events.push({status:'unavailable'});this.host.audit('public_ip_unavailable');}
+    }catch(error){
+      if(request!==this.requestId)return;
+      this.address=null;
+      if(this.button?.isConnected){this.button.textContent=navigator.onLine===false?'Disconnected':'Unavailable';this.button.className='public-ip-value is-offline';this.button.disabled=true;this.button.title='Public IP connection unavailable';}
+      this.registry.fetch.events.push({status:'unavailable'});this.host.audit('public_ip_unavailable');
+    }
   }
 }
