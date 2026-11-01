@@ -63,6 +63,7 @@ export class InfrastructureWorkbench {
       const list=this.el('ul',null,null,card);
       for(const item of stage.checks)this.el('li',item,null,list);
     }
+    this.host.shellBooth.mount(content);
     this.el('p','These are proposed service categories and review scopes, not a claim that managed delivery or infrastructure provisioning is currently available.','workbench-intro',content);
   }
 }

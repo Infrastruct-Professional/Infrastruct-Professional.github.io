@@ -1,3 +1,4 @@
+import { SecureShellBooth } from './secure-shell-booth.js';
 import { InfrastructureWorkbench } from './infrastructure-workbench.js';
 import { AccountSystem } from './account-system.js';
 import { SiteAPI } from './site-api.js';
@@ -16,6 +17,7 @@ class InfrastructProfessional {
     this.environment = this.detect();
     this.frontPageMinimal=true;
     this.account=new AccountSystem(this);
+    this.shellBooth=new SecureShellBooth(this);
     this.infrastructure=new InfrastructureWorkbench(this);
     this.siteAPI=new SiteAPI(this);
     this.cookies=new CookieSystem(this);
