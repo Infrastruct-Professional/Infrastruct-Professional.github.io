@@ -1,3 +1,4 @@
+import { AccountSystem } from './account-system.js';
 import { SiteAPI } from './site-api.js';
 import { CookieSystem } from './cookie-system.js';
 import { PublicIPSystem } from './public-ip.js';
@@ -13,6 +14,7 @@ class InfrastructProfessional {
     this.register('constructor', { started: Date.now() });
     this.environment = this.detect();
     this.frontPageMinimal=true;
+    this.account=new AccountSystem(this);
     this.siteAPI=new SiteAPI(this);
     this.cookies=new CookieSystem(this);
     this.initialPlansOpened=false;
@@ -99,7 +101,7 @@ body:has(.navmobile) .recent-screen .appcard:active{transform:scale(.96)}
 .brand-glass-button{box-sizing:border-box;flex:0 0 30px;width:30px;height:30px;min-width:30px;min-height:30px;display:grid;place-items:center;overflow:hidden;padding:3px;border:0;border-radius:50%;background:linear-gradient(145deg,#ffffff25,#ffffff08);box-shadow:inset 0 1px #ffffff36;backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);transition:transform .25s cubic-bezier(.2,1.2,.3,1),background .2s,box-shadow .2s;cursor:pointer}.brand-glass-button img{display:block;width:24px;height:24px;max-width:100%;max-height:100%;object-fit:contain}.brand-glass-button[aria-expanded=true]{transform:scale(1);background:#ffffff30;box-shadow:inset 0 1px #ffffff55,0 3px 14px #0004}.brand-corner-menu{position:fixed;top:44px;left:12px;z-index:40;width:min(240px,calc(100vw - 24px));padding:10px;visibility:hidden;pointer-events:none;opacity:0;transform:translateY(-13px) scale(.72);transform-origin:17px 0;border:0;border-radius:6px 18px 18px 18px;background:linear-gradient(140deg,rgba(45,77,101,.8),rgba(10,28,44,.8));box-shadow:0 18px 45px #0007,inset 0 1px #ffffff27;backdrop-filter:blur(26px) saturate(160%);-webkit-backdrop-filter:blur(26px) saturate(160%);transition:opacity .23s ease,transform .3s cubic-bezier(.2,1.2,.3,1),visibility .3s}.brand-corner-menu.is-open{visibility:visible;pointer-events:auto;opacity:1;transform:translateY(0) scale(1);border-radius:16px}.brand-menu-item{display:block;width:100%;padding:12px 14px;text-align:left;border:0;border-radius:10px;background:#ffffff0c;backdrop-filter:blur(12px);font-weight:600}.brand-menu-item:hover{background:#ffffff22}@media(prefers-reduced-motion:reduce){.infrastruct-menu,.brand-corner-menu,.brand-glass-button{transition:none}}
 html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!important}
 .app,.app *{font-family:'Smooch Sans',sans-serif}
-.public-ip-field{display:inline-flex;align-items:baseline;gap:5px;min-width:0;margin-left:9px;white-space:nowrap;line-height:1.2}.cookie-panel{position:fixed;z-index:120;right:16px;bottom:16px;width:min(380px,calc(100vw - 32px));padding:16px;border-radius:15px;background:#19344aee;box-shadow:0 12px 40px #000a;backdrop-filter:blur(20px)}.cookie-panel strong{font-size:21px}.cookie-panel p{font-size:16px;margin:7px 0 12px}.cookie-actions{display:flex;flex-wrap:wrap;gap:8px}.cookie-actions button{font-size:16px;padding:6px 12px}.public-ip-label{display:inline;font-size:15px;color:#d5e9f5;white-space:nowrap;line-height:inherit}
+.account-menu-actions{display:flex;gap:8px;margin-top:8px}.account-menu-actions .brand-menu-item{flex:1;text-align:center;padding:9px 6px}.account-dialog{position:fixed;z-index:110;top:50%;left:50%;transform:translate(-50%,-50%);width:min(420px,calc(100vw - 28px));padding:20px;border-radius:18px;background:#18334beF;box-shadow:0 20px 65px #000b;backdrop-filter:blur(24px)}.account-dialog-header{display:flex;align-items:center;justify-content:space-between}.account-dialog-header strong{font-size:25px}.account-dialog-header button{border:0;padding:2px 10px}.account-dialog p{font-size:17px}.public-ip-field{display:inline-flex;align-items:baseline;gap:5px;min-width:0;margin-left:9px;white-space:nowrap;line-height:1.2}.cookie-panel{position:fixed;z-index:120;right:16px;bottom:16px;width:min(380px,calc(100vw - 32px));padding:16px;border-radius:15px;background:#19344aee;box-shadow:0 12px 40px #000a;backdrop-filter:blur(20px)}.cookie-panel strong{font-size:21px}.cookie-panel p{font-size:16px;margin:7px 0 12px}.cookie-actions{display:flex;flex-wrap:wrap;gap:8px}.cookie-actions button{font-size:16px;padding:6px 12px}.public-ip-label{display:inline;font-size:15px;color:#d5e9f5;white-space:nowrap;line-height:inherit}
 .public-ip-value{display:inline-block;vertical-align:baseline;line-height:inherit;border:0!important;background:transparent!important;padding:0!important;margin:0!important;font-size:15px;font-weight:700;letter-spacing:.04em;white-space:nowrap;font-variant-numeric:tabular-nums;transition:color .2s,text-shadow .2s}
 .public-ip-value.is-online{color:#5ecb51!important;text-shadow:none;cursor:copy}
 .public-ip-value.is-online:hover{color:#77e56b!important;text-shadow:none}
@@ -130,6 +132,7 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
         item.addEventListener('click',()=>{this.toggleBrandMenu(false);this.webOS.open(label);this.audit('brand_menu_select',{label});});
       }
       this.brandButton=brandButton;this.brandMenu=brandMenu;
+      this.account.mount(brandMenu);
       brandButton.addEventListener('click',event=>{event.stopPropagation();this.toggleBrandMenu(!brandMenu.classList.contains('is-open'));});
       const main=this.element('main',null,'minimal-main',this.root);
       main.setAttribute('aria-label','Infrastruct Professional');
@@ -213,7 +216,7 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
   }
   back(){if(this.environment.mode==='desktop')return this.close();if(this.state.recent){this.state.recent=false;return this.state.foreground?this.showExisting(this.state.foreground):this.close();}const previous=this.state.history.pop();if(previous)return this.showExisting(previous);this.hide();}
   hide(){this.close();this.state.recent=false;this.state.foreground=null;this.audit('home');}
-  onResize(){const previous=this.environment.mode;this.environment=this.detect();this.audit('resize',{width:innerWidth,height:innerHeight});if(previous!==this.environment.mode){const recent=this.state.recent;this.toggleBrandMenu(false);document.removeEventListener('pointerdown',this.onStartOutside);document.removeEventListener('keydown',this.onStartEscape);this.webOS.active?.unmount();this.cookies.unmount();this.root.remove();this.close();this.render();if(this.environment.mode!=='desktop'){if(recent)this.appSwitcher();else if(this.state.foreground)this.showExisting(this.state.foreground);}}}
+  onResize(){const previous=this.environment.mode;this.environment=this.detect();this.audit('resize',{width:innerWidth,height:innerHeight});if(previous!==this.environment.mode){const recent=this.state.recent;this.toggleBrandMenu(false);document.removeEventListener('pointerdown',this.onStartOutside);document.removeEventListener('keydown',this.onStartEscape);this.webOS.active?.unmount();this.account.unmount();this.cookies.unmount();this.root.remove();this.close();this.render();if(this.environment.mode!=='desktop'){if(recent)this.appSwitcher();else if(this.state.foreground)this.showExisting(this.state.foreground);}}}
   audit(type,detail={}) {if(!this.state)return;this.state.events.push({type,time:new Date().toISOString(),detail});if(this.state.events.length>300)this.state.events.shift();this.analyze();}
   async startR(){
     try{
