@@ -20,6 +20,9 @@ class InfrastructProfessional {
     this.environment = this.detect();
     this.frontPageMinimal=true;
     this.account=new AccountSystem(this);
+    this.freePlanSelected=false;
+    this.hostingProviders=new HostingProviderService(this);
+    this.dnsProviders=new DNSProviderService(this);
     this.encoding=new EncodingService(this);
     this.shellBooth=new SecureShellBooth(this);
     this.infrastructure=new InfrastructureWorkbench(this);
@@ -134,10 +137,12 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
       const brandMenu=this.element('section',null,'brand-corner-menu',this.root);
       brandMenu.id='brand-corner-menu';brandMenu.setAttribute('aria-label','Infrastruct Professional menu');
       brandMenu.setAttribute('aria-hidden','true');brandButton.setAttribute('aria-controls',brandMenu.id);
+      this.planMenuItems=[];
       for(const label of ['Plans','Tools','Services']){
         const item=this.element('button',label,'brand-menu-item',brandMenu);
         item.type='button';
         item.addEventListener('click',()=>{this.toggleBrandMenu(false);this.webOS.open(label);this.audit('brand_menu_select',{label});});
+        if(label!=='Plans'){item.hidden=true;if(!this.planMenuItems)this.planMenuItems=[];this.planMenuItems.push(item);}
       }
       this.brandButton=brandButton;this.brandMenu=brandMenu;
       this.account.mount(brandMenu);
@@ -152,6 +157,7 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
       document.addEventListener('pointerdown',this.onStartOutside);
       document.addEventListener('keydown',this.onStartEscape);
       this.webOS.mount(this.environment.mode,this.root);
+      if(this.freePlanSelected)for(const item of this.planMenuItems||[])item.hidden=false;
       this.cookies.mount(this.root);
       if(!this.initialPlansOpened){this.initialPlansOpened=true;this.webOS.open('Plans');}
       return;
@@ -178,6 +184,12 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
       const nav=this.element('nav',null,'navmobile',this.root);
       this.action(nav,'‹',()=>this.back());this.action(nav,'○',()=>this.hide());this.action(nav,'▢',()=>this.appSwitcher());
     }
+  }
+  selectFreePlan(){
+    this.freePlanSelected=true;
+    for(const item of this.planMenuItems||[])item.hidden=false;
+    this.audit('free_plan_entered',{scope:'browser-session'});
+    this.webOS.open('Services');
   }
   toggleBrandMenu(open){
     if(!this.brandMenu||!this.brandButton)return;

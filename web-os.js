@@ -17,6 +17,7 @@ class RuntimeSystem {
     this.host.element('strong',name,null,bar);
     const controls=this.host.element('div',null,'os-controls',bar);
     const content=this.host.element('div',null,'os-content',el);
+    if((name==='Tools'||name==='Services')&&!this.host.freePlanSelected){this.host.audit('plan_entry_required',{service:name});name='Plans';el.setAttribute('aria-label','Plans');bar.querySelector('strong').textContent='Plans';}
     if(name==='Plans')this.renderPlans(content);
     else if(name==='Tools'||name==='Services')this.host.infrastructure.render(content,name);
     else this.host.element('p',description,null,content);
@@ -28,7 +29,7 @@ class RuntimeSystem {
     try{
       const data=await this.host.siteAPI.plans();
       if(!content.isConnected)return;
-      status.textContent='Proposed subscription plans · Billing and activation are not yet available.';
+      status.textContent='Select Free to enter the workspace. Paid subscriptions are not yet available.';
       const grid=this.host.element('div',null,'plans-window-grid',content);
       for(const plan of data.plans){
         const card=this.host.element('article',null,'plans-window-card',grid);
@@ -37,7 +38,7 @@ class RuntimeSystem {
         this.host.element('small',plan.audience,null,card);
         const list=this.host.element('ul',null,null,card);
         for(const feature of plan.features)this.host.element('li',feature,null,list);
-        if(plan.id==='free'){this.host.element('small','Available now · No subscription required',null,card);const button=this.host.element('button','Explore free services',null,card);button.type='button';button.addEventListener('click',()=>this.open('Services','Free infrastructure services and tools.'));}
+        if(plan.id==='free'){this.host.element('small','Available now · No subscription required',null,card);const button=this.host.element('button','Enter Free plan',null,card);button.type='button';button.addEventListener('click',()=>this.host.selectFreePlan());}
         else{const button=this.host.element('button','Coming soon',null,card);button.disabled=true;}
       }
     }catch(error){status.textContent='Plan catalogue is temporarily unavailable.';}
