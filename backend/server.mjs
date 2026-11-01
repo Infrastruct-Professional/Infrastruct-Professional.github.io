@@ -5,11 +5,12 @@ import crypto from 'node:crypto';
 export class TrustedExecutor {
   constructor(config=process.env){
     this.config=config;
-    this.registry={operations:new Map(),events:[],entitlements:new Map()};
+    this.registry={operations:new Map(),events:[],entitlements:new Map(),webhookIds:new Map()};
     this.port=Number(config.PORT||8787);
     this.allowedOrigin=config.PUBLIC_ORIGIN||'https://infrastruct.pro';
     this.accessToken=config.EXECUTOR_ACCESS_TOKEN||'';
     this.webhookSecret=config.SHOPIFY_WEBHOOK_SECRET||'';
+    this.shopDomain=config.SHOPIFY_SHOP_DOMAIN||'k0yrr9-zr.myshopify.com';
     this.mode='dry-run';
   }
   record(type,details={}){this.registry.events.push({type,time:new Date().toISOString(),...details});}
@@ -27,8 +28,16 @@ export class TrustedExecutor {
     let raw;try{raw=await this.read(req);}catch{return this.send(res,413,{error:'Request too large'},cors);}
     if(req.method==='POST'&&url.pathname==='/webhooks/shopify'){
       if(!this.verifiedWebhook(raw,req.headers['x-shopify-hmac-sha256']))return this.send(res,401,{error:'Invalid webhook signature'},cors);
-      // Signature validation is not subscription verification. A production handler must verify shop, event type, customer, selling plan, payment and state using Shopify APIs.
-      this.record('shopify_webhook_received',{topic:String(req.headers['x-shopify-topic']||'unknown')});
+      const shop=String(req.headers['x-shopify-shop-domain']||'').toLowerCase();
+      const topic=String(req.headers['x-shopify-topic']||'');
+      const id=String(req.headers['x-shopify-webhook-id']||'');
+      if(shop!==this.shopDomain||!/^[-a-z0-9_/.]{1,128}$/.test(topic)||!/^[a-zA-Z0-9-]{8,128}$/.test(id))return this.send(res,400,{error:'Invalid webhook metadata'},cors);
+      // In-memory deduplication is only for local tests. Production requires persistent replay-safe storage.
+      if(this.registry.webhookIds.has(id))return this.send(res,202,{accepted:true,duplicate:true,entitlementsUpdated:false},cors);
+      if(this.registry.webhookIds.size>=1024)this.registry.webhookIds.delete(this.registry.webhookIds.keys().next().value);
+      this.registry.webhookIds.set(id,Date.now());
+      // HMAC plus metadata is not payment or subscription verification. No entitlements are granted.
+      this.record('shopify_webhook_received',{topic,shop,id});
       return this.send(res,202,{accepted:true,entitlementsUpdated:false},cors);
     }
     if(!this.authorized(req))return this.send(res,401,{error:'Authentication not configured or invalid'},cors);

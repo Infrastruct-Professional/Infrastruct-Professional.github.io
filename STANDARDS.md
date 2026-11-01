@@ -78,3 +78,7 @@
 - Proposed annual prepayment prices with 15% discount: Starter €193.80/year, Professional €601.80/year, Enterprise €2,029.80/year. These are **proposals only**, not configured Shopify selling plans or authorized charges.
 - `plan-catalog.js` centralizes the three merchant product GIDs, feature descriptions and proposed monthly/annual prices; no secrets or payment controls are included. Do not infer access entitlements from this public catalogue.
 - Before billing activation: install/configure a supported subscription app, associate monthly and annual recurring selling plans with the three products, verify Shopify Payments and store eligibility, build verified checkout and contract lifecycle, and obtain final merchant approval for pricing and publication.
+
+## Webhook safety checkpoint
+- Shopify webhook HMAC, exact expected shop, event metadata and in-memory duplicate detection are now implemented and covered by tests. Duplicate detection is not persistent and must not be treated as production replay protection.
+- Valid webhooks never grant subscription access. A verified authenticated customer-to-Shopify-contract mapping, paid/active state, cancellations, payment failure policy, durable event store and secure customer session are required first.

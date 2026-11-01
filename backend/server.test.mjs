@@ -33,7 +33,7 @@ test('Shopify webhook rejects bad signature',async()=>{
 });
 test('valid signed webhook does not grant subscriptions',async()=>{
   const h=new Harness();const body={id:1};const signature=crypto.createHmac('sha256','local-test-secret').update(JSON.stringify(body)).digest('base64');
-  const r=await h.request('/webhooks/shopify',{body,headers:{'x-shopify-hmac-sha256':signature}});assert.equal(r.status,202);assert.equal(r.payload.entitlementsUpdated,false);
+  const r=await h.request('/webhooks/shopify',{body,headers:{'x-shopify-hmac-sha256':signature,'x-shopify-shop-domain':'k0yrr9-zr.myshopify.com','x-shopify-topic':'subscription_contracts/create','x-shopify-webhook-id':'webhook-00000001'}});assert.equal(r.status,202);assert.equal(r.payload.entitlementsUpdated,false);
 });
 test('cross-origin browser requests rejected',async()=>{
   const h=new Harness();const r=await h.request('/prepare',{origin:'https://untrusted.example',token:'local-test-token'});assert.equal(r.status,403);
@@ -42,4 +42,16 @@ test('cross-origin browser requests rejected',async()=>{
 test('subscription profile fails closed without verified customer identity',async()=>{
   const h=new Harness();const r=await h.request('/profile',{method:'GET',token:'local-test-token'});
   assert.equal(r.status,200);assert.equal(r.payload.authenticated,false);assert.equal(r.payload.status,'unavailable');
+});
+
+test('valid HMAC from an unexpected shop is rejected',async()=>{
+ const h=new Harness();const body={id:1};const sig=crypto.createHmac('sha256','local-test-secret').update(JSON.stringify(body)).digest('base64');
+ const r=await h.request('/webhooks/shopify',{body,headers:{'x-shopify-hmac-sha256':sig,'x-shopify-shop-domain':'other.myshopify.com','x-shopify-topic':'orders/create','x-shopify-webhook-id':'webhook-00000002'}});
+ assert.equal(r.status,400);assert.equal(h.service.registry.events.length,0);
+});
+test('duplicate signed Shopify webhook cannot repeat event handling',async()=>{
+ const h=new Harness();const body={id:1};const sig=crypto.createHmac('sha256','local-test-secret').update(JSON.stringify(body)).digest('base64');
+ const args={body,headers:{'x-shopify-hmac-sha256':sig,'x-shopify-shop-domain':'k0yrr9-zr.myshopify.com','x-shopify-topic':'orders/create','x-shopify-webhook-id':'webhook-00000003'}};
+ const first=await h.request('/webhooks/shopify',args),second=await h.request('/webhooks/shopify',args);
+ assert.equal(first.status,202);assert.equal(second.payload.duplicate,true);assert.equal(h.service.registry.events.length,1);
 });

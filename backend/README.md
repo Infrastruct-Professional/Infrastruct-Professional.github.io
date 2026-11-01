@@ -15,7 +15,7 @@ Never commit real tokens or webhook secrets. Do not expose the development serve
 - `/health` reports dry-run status.
 - `/plans` returns an empty plan catalogue; `/checkout` returns 503.
 - `/entitlements` always reports inactive.
-- `/webhooks/shopify` validates HMAC against the **raw request body** but does not grant access or update subscriptions.
+- `/webhooks/shopify` validates HMAC against the **raw request body**, checks the configured Shopify shop domain and webhook metadata, and deduplicates event IDs in memory for local tests. It does not grant access or update subscriptions. Production requires durable replay prevention and Shopify contract verification.
 - `/prepare`, `/execute` and `/revoke` refuse real operations. No SSH, container execution, cloud provider modification or Shopify purchase is implemented.
 - Other endpoints use a development bearer token; this is **not** a production identity system. Browser UI has no mechanism to authenticate to it yet.
 
@@ -24,3 +24,11 @@ Never commit real tokens or webhook secrets. Do not expose the development serve
 Implement authenticated sessions (and CSRF protection), persistent user/customer identity, verified Shopify subscription lifecycle and server-side entitlements, replay-safe webhook processing, operation target ownership verification, strict allowlisted executor actions, audit trails, per-operation approval, short-lived scoped tokens, idempotency, rate limits, output redaction, secret management, resource limits, cancellation and expiry, and external security review. Prefer managed runtime isolation rather than running arbitrary user-supplied shell commands.
 
 Separate billing identity from authorization to alter a customer's infrastructure. A paid subscription alone never grants deployment permission.
+
+## Shopify subscription prerequisites
+
+Shopify reports `eligibleForSubscriptions=true`, `sellsSubscriptions=false` for `k0yrr9-zr.myshopify.com` at the time of preparation. The three products remain DRAFT and have no attached recurring selling plans.
+
+Shopify's subscriptions API requires a supported subscriptions app with protected permissions; an ordinary merchant Admin API connector alone is not a substitute. Use the official Shopify Subscriptions app or a vetted subscription provider, configure monthly and annual selling plans, confirm payment processing and renewal lifecycle, then connect a trusted authenticated backend. Do not use a one-time product checkout as a recurring subscription.
+
+Set `SHOPIFY_SHOP_DOMAIN` to the verified shop domain on the backend (default is the current merchant domain); set `SHOPIFY_WEBHOOK_SECRET` only through a secret manager. This server remains non-public and non-production.
