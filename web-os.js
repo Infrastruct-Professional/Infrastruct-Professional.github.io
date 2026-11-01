@@ -19,11 +19,23 @@ class RuntimeSystem {
     const content=this.host.element('div',null,'os-content',el);
     this.host.element('p',description,null,content);
     const win={id,name,element:el,bar,controls,minimized:false,maximized:false};
-    this.windows.set(id,win);this.focus(id);this.record('open',{id,name});return win;
+    this.windows.set(id,win);this.focus(id);this.animateWindow(el,'open');this.record('open',{id,name});return win;
   }
   focus(id){const win=this.windows.get(id);if(!win)return;this.focused=id;win.minimized=false;win.element.hidden=false;win.element.style.zIndex=String(50+ ++this.sequence);this.record('focus',{id});}
   minimize(id){const win=this.windows.get(id);if(!win)return;win.minimized=true;win.element.hidden=true;this.record('minimize',{id});}
-  close(id){const win=this.windows.get(id);if(!win)return;win.element.remove();this.windows.delete(id);if(this.focused===id)this.focused=null;this.record('close',{id});}
+  animateWindow(element,direction){
+    if(!element||typeof element.animate!=='function'||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return null;
+    const opening=direction==='open';
+    return element.animate(opening?
+      [{opacity:0,transform:'translateY(20px) scale(.82)',filter:'blur(12px)',borderRadius:'36px'},{opacity:1,transform:'translateY(0) scale(1)',filter:'blur(0)',borderRadius:getComputedStyle(element).borderRadius}]:
+      [{opacity:1,transform:'translateY(0) scale(1)',filter:'blur(0)'},{opacity:0,transform:'translateY(16px) scale(.78)',filter:'blur(12px)'}],
+      {duration:opening?340:240,easing:opening?'cubic-bezier(.16,1,.3,1)':'cubic-bezier(.55,0,1,.45)',fill:'forwards'});
+  }
+  close(id){const win=this.windows.get(id);if(!win)return;this.windows.delete(id);if(this.focused===id)this.focused=null;this.record('close',{id});
+    const animation=this.animateWindow(win.element,'close');
+    if(animation)animation.finished.then(()=>win.element.remove()).catch(()=>win.element.remove());
+    else win.element.remove();
+  }
   open(name,description){return this.createWindow(name,description);}
 }
 export class DesktopSystem extends RuntimeSystem {
