@@ -17,3 +17,10 @@
 - Separate read/plan/apply stages with an explicit confirmation for every external change.
 - Provider-specific credentials must be managed server-side or through delegated authorization, not embedded in static GitHub Pages assets.
 - Add automated accessibility, performance, security and mobile-device testing before describing this site as fully compliant with WCAG 2.2 AA or other standards.
+
+## Shopify commerce integration (pre-programmed, disconnected)
+- `commerce.js` provides a Shopify commerce UI and a backend adapter. Connection is disabled until merchant credentials, approved storefront domain, and HTTPS backend endpoint are configured.
+- Backend contract: `GET {apiEndpoint}/offers` returns `{ "offers": [{ "id": "...", "title": "...", "price": "...", "currency": "EUR" }] }`; `POST {apiEndpoint}/checkout` accepts `{ "offerId": "..." }` and returns `{ "checkoutUrl": "https://..." }`.
+- The backend must map offer IDs to server-controlled Shopify variants, create checkouts through supported Shopify APIs, verify Shopify webhooks and payment status, and issue short-lived entitlements. Never accept prices, paid status or checkout destinations directly from a browser without server validation.
+- Public frontend configuration must contain no secret keys. Authentication, payment verification, webhook signing, refunds and entitlements are not implemented by this static frontend.
+- Payment does not imply authorization for server access or DNS changes. Obtain a separate explicit confirmation for every external change.

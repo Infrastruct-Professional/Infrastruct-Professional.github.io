@@ -1,3 +1,4 @@
+import { ShopifyCommerce } from './commerce.js';
 import { ServiceWorkbench } from './service.js';
 class InfrastructProfessional {
   constructor() {
@@ -9,6 +10,8 @@ class InfrastructProfessional {
     this.register('lifecycle', this.lifecycle);
     this.register('state', this.state);
     this.services=new ServiceWorkbench(this);
+    this.commerce=new ShopifyCommerce(this);
+    this.register('commerce',this.commerce.registry);
     this.register('services',this.services.registry);
     this.render();
     this.audit('boot', { environment: this.environment });
@@ -63,6 +66,8 @@ body:has(.navmobile) .recent-screen .appcard:active{transform:scale(.96)}
 @media(min-width:600px){body:has(.navmobile) .navmobile{top:60px;bottom:0;right:auto;width:76px;height:auto;flex-direction:column;justify-content:center;gap:20px;padding:12px 5px;border-top:0;border-right:1px solid #ffffff24}body:has(.navmobile) .mobile-application{inset:60px 0 0 76px}body:has(.navmobile) .recent-screen .appcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));max-width:900px;margin:auto}body:has(.navmobile) .shell,body:has(.navmobile) footer{margin-left:76px}}
 
 .service-workbench{padding:32px clamp(18px,5vw,70px);border-top:1px solid #ffffff20;max-width:1300px;margin:auto}.service-workbench h2{font-size:clamp(26px,4vw,42px);margin:10px 0}.service-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px;margin:25px 0}.service-card{display:flex;flex-direction:column;align-items:flex-start;gap:9px;text-align:left;min-height:170px;padding:22px;background:#11253a;border:1px solid #ffffff25;transition:transform .15s,background .15s}.service-card:hover{transform:translateY(-2px);background:#18334e}.service-card small{color:#a5c4d6}.service-icon{color:#5bd8ff;display:inline-flex}.service-icon svg{display:block}.service-workspace{max-width:720px;margin-top:22px}.service-workspace form{display:grid;gap:15px}.service-workspace label{display:grid;gap:6px}.service-workspace input,.service-workspace textarea{width:100%;font:inherit;color:inherit;background:#0b1b2b;border:1px solid #64859a;border-radius:10px;padding:12px}.service-workspace input:focus-visible,.service-workspace textarea:focus-visible,.service-card:focus-visible{outline:3px solid #62d8ff;outline-offset:2px}.session-exit{margin-top:8px}.export-plan{margin-top:15px;background:#174b64}@media(prefers-reduced-motion:reduce){.service-card{transition:none}.service-card:hover{transform:none}}
+
+.commerce-section{max-width:1300px;margin:auto;padding:24px clamp(18px,5vw,70px) 48px;border-top:1px solid #ffffff20}.commerce-section h2{margin:8px 0}.commerce-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:18px}.commerce-card{display:flex;flex-direction:column;align-items:flex-start;gap:9px;background:#102438;border:1px solid #ffffff25;border-radius:12px;padding:18px}.commerce-card small,.commerce-status{color:#b0c7d7}
 `;
   }
   render() {
@@ -81,6 +86,7 @@ body:has(.navmobile) .recent-screen .appcard:active{transform:scale(.96)}
     const tiles=this.element('div',null,'tiles',hero);
     for(const name of ['Overview','Architecture','Runtime','Audit']) this.action(tiles,name,()=>this.open(name),'tile');
     this.services.render(this.root);
+    this.commerce.render(this.root);
     const footer=this.element('footer',null,null,this.root);
     this.element('span','© '+new Date().getFullYear()+' Infrastruct Professional',null,footer);
     this.runtimeLabel=this.element('span','JS runtime ready · R initializing','muted',footer);
