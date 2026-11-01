@@ -1,3 +1,4 @@
+import { EncodingService } from './encoding-service.js';
 import { SecureShellBooth } from './secure-shell-booth.js';
 import { InfrastructureWorkbench } from './infrastructure-workbench.js';
 import { AccountSystem } from './account-system.js';
@@ -17,6 +18,7 @@ class InfrastructProfessional {
     this.environment = this.detect();
     this.frontPageMinimal=true;
     this.account=new AccountSystem(this);
+    this.encoding=new EncodingService(this);
     this.shellBooth=new SecureShellBooth(this);
     this.infrastructure=new InfrastructureWorkbench(this);
     this.siteAPI=new SiteAPI(this);
