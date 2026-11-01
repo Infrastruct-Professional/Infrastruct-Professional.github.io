@@ -32,3 +32,9 @@ Shopify reports `eligibleForSubscriptions=true`, `sellsSubscriptions=false` for 
 Shopify's subscriptions API requires a supported subscriptions app with protected permissions; an ordinary merchant Admin API connector alone is not a substitute. Use the official Shopify Subscriptions app or a vetted subscription provider, configure monthly and annual selling plans, confirm payment processing and renewal lifecycle, then connect a trusted authenticated backend. Do not use a one-time product checkout as a recurring subscription.
 
 Set `SHOPIFY_SHOP_DOMAIN` to the verified shop domain on the backend (default is the current merchant domain); set `SHOPIFY_WEBHOOK_SECRET` only through a secret manager. This server remains non-public and non-production.
+
+## Subscription policy engine (offline tests only)
+
+`subscription-policy.mjs` provides a fail-closed entitlement decision model with product allowlisting, matching customer identities, shop matching, verified contract and payment requirements, and expiration. **The policy engine does not perform Shopify verification itself.** Its `identityVerified`, `contractVerified`, and `paymentCurrent` inputs must be populated exclusively by a trusted server-side identity and Shopify verification workflow, never by browser or webhook payload assertions. No HTTP endpoint currently grants these entitlements.
+
+Store inventory check (2026-11-01): only Shopify Messaging and Shopify ChatGPT MCP App are installed. No subscription app or selling plan groups were found. Installing a supported subscription app is required before creating genuine recurring offers.
