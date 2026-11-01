@@ -24,3 +24,12 @@
 - The backend must map offer IDs to server-controlled Shopify variants, create checkouts through supported Shopify APIs, verify Shopify webhooks and payment status, and issue short-lived entitlements. Never accept prices, paid status or checkout destinations directly from a browser without server validation.
 - Public frontend configuration must contain no secret keys. Authentication, payment verification, webhook signing, refunds and entitlements are not implemented by this static frontend.
 - Payment does not imply authorization for server access or DNS changes. Obtain a separate explicit confirmation for every external change.
+
+
+## Subscription business model
+- Infrastruct Professional charges for recurring access plans, **not** per DNS record, server configuration or deployment job. Plans grant access to workstation capabilities, not managed hosting or ongoing infrastructure operation.
+- The Shopify catalogue is the source for plan identifiers, billing intervals, prices and currencies. No tiers, prices or feature limits are presumed before merchant configuration.
+- Updated backend contract: `GET {apiEndpoint}/plans` returns `{ "plans": [{ "id": "...", "title": "...", "price": "...", "currency": "EUR", "interval": "month" }] }`; `POST {apiEndpoint}/checkout` accepts `{ "planId": "..." }` and returns `{ "checkoutUrl": "https://..." }`.
+- Backend must use supported Shopify subscription/selling-plan capabilities, authenticate the customer, verify signed billing notifications and check subscription entitlements server-side. Support renewals, cancellation, past-due states, upgrades, downgrades and refunds with documented access rules. Never trust browser-supplied subscription status.
+- Plan cancellation or expiry must never alter or shut down already-deployed customer infrastructure. Customers own their deployments and may export their configuration.
+- Existing older `offers` API notes are superseded by the `plans` contract above.
