@@ -14,13 +14,14 @@ export class PublicIPSystem {
     this.button=this.host.element('button','Checking…','public-ip-value is-pending',field);
     this.os=this.host.element('span',this.host.environment.os,'public-ip-label',field);
     this.host.element('span','/','public-ip-label',field);
-    this.host.element('span','Guest','public-ip-label',field);
+    this.identity=this.host.element('span','Guest','public-ip-label',field);
     this.button.type='button';this.button.disabled=true;
     this.button.setAttribute('aria-label','Public IP address; click to copy');
     this.button.setAttribute('aria-live','polite');
     this.button.addEventListener('click',()=>this.copyAddress());
     if(navigator.onLine===false)this.offline();else this.fetchAddress();
   }
+  setIdentity(value){if(this.identity?.isConnected)this.identity.textContent=value;}
   async copyAddress(){
     if(!this.address||!this.button||this.button.disabled)return;
     try{
