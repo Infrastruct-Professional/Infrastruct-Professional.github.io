@@ -38,3 +38,8 @@ test('valid signed webhook does not grant subscriptions',async()=>{
 test('cross-origin browser requests rejected',async()=>{
   const h=new Harness();const r=await h.request('/prepare',{origin:'https://untrusted.example',token:'local-test-token'});assert.equal(r.status,403);
 });
+
+test('subscription profile fails closed without verified customer identity',async()=>{
+  const h=new Harness();const r=await h.request('/profile',{method:'GET',token:'local-test-token'});
+  assert.equal(r.status,200);assert.equal(r.payload.authenticated,false);assert.equal(r.payload.status,'unavailable');
+});

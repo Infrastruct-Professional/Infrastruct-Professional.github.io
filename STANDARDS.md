@@ -58,3 +58,10 @@
 - Webhook HMAC authenticity alone does not establish payment or subscription entitlement. The scaffold intentionally does not grant access on webhook reception.
 - `backend/server.test.mjs` covers authentication rejection, execution refusal, checkout refusal, webhook HMAC rejection and cross-origin rejection.
 - This is not a production-ready executor, Shopify integration, or identity provider. See `backend/README.md` for mandatory production gates.
+
+## Customer subscription profile and Shopify account mapping
+- Connected Shopify merchant account verified via the Shopify plugin: store domain `k0yrr9-zr.myshopify.com`, EUR, Finland. This domain is public merchant configuration only; no API credentials are embedded in the frontend.
+- `subscription-profile.js` provides the customer-facing subscription profile UI. It is intentionally disconnected until identity and a trusted billing backend are configured. The backend `/profile` endpoint currently returns an unauthenticated, unavailable profile and grants no entitlements.
+- Recurring subscriptions must be modeled as Shopify products/variants with supported selling plans. Checkout must carry a valid selling plan ID and create a Shopify subscription contract. Billing renewals and failures must be managed by an authorized subscriptions app, with Shopify contract status verified server-side.
+- A customer profile should display verified plan, subscription state, renewal date and entitled workstation features, with authenticated customer management for upgrades, downgrades and cancellation when supported. Subscription access must never be inferred from a browser flag, product title, email alone or webhook signature alone.
+- The Shopify merchant's **Basic** plan is the merchant's Shopify account tier, not an Infrastruct Professional customer subscription tier. No customer plan names, prices or billing intervals have been set or published.

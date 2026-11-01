@@ -3,7 +3,7 @@ export class ShopifyCommerce {
   constructor(host){
     this.host=host;
     this.registry={configuration:{functions:{},nested:{},instances:[]},checkout:{functions:{},nested:{},instances:[]}};
-    this.config={storeDomain:'',apiEndpoint:'',checkoutMode:'hosted',enabled:false};
+    this.config={storeDomain:'k0yrr9-zr.myshopify.com',apiEndpoint:'',checkoutMode:'hosted',enabled:false};
     this.registry.configuration.instances.push(this.config);
     this.planModel={type:'recurring-subscription',catalogSource:'shopify',accessSource:'verified-backend',tiers:[],billingIntervals:[],entitlements:[],customerHosting:false};
     this.registry.configuration.instances.push(this.planModel);
@@ -38,7 +38,7 @@ export class ShopifyCommerce {
     const e=(tag,text,cls,p)=>this.host.element(tag,text,cls,p);
     const section=e('section',null,'commerce-section',parent);
     e('div','SUBSCRIPTION PLANS','eyebrow',section);
-    e('h2','Infrastruct Professional plans',null,section);
+    e('h2','Infrastruct Professional subscriptions',null,section);
     e('p','Subscribe for access to Infrastruct Professional tools. Shopify handles recurring billing; your infrastructure remains yours. Plan names, prices and limits will appear after connection.',null,section);
     const status=e('p',this.config.enabled?'Connecting to Shopify…':'Subscription plans are being prepared. Shopify authentication and billing are not yet connected.','commerce-status',section);
     const list=e('div',null,'commerce-grid',section);

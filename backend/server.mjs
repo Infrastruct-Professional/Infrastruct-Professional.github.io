@@ -35,6 +35,7 @@ export class TrustedExecutor {
     let body={};try{body=raw.length?JSON.parse(raw.toString('utf8')):{};}catch{return this.send(res,400,{error:'Invalid JSON'},cors);}
     if(req.method==='GET'&&url.pathname==='/plans')return this.send(res,200,{plans:[],status:'shopify-not-configured'},cors);
     if(req.method==='GET'&&url.pathname==='/entitlements')return this.send(res,200,{active:false,reason:'billing-not-configured'},cors);
+    if(req.method==='GET'&&url.pathname==='/profile')return this.send(res,200,{authenticated:false,status:'unavailable',planName:null,renewalDate:null,features:[],reason:'customer-identity-and-billing-not-configured'},cors);
     if(req.method==='POST'&&url.pathname==='/checkout')return this.send(res,503,{error:'Shopify subscription checkout is not configured'},cors);
     if(req.method==='POST'&&url.pathname==='/prepare'){
       const manifest=body.manifest;
