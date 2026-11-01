@@ -89,7 +89,7 @@ export class TabletSystem extends RuntimeSystem {
   open(name,description){this.recentPanel.hidden=true;this.windows.forEach(w=>w.element.hidden=true);const win=super.open(name,description);win.element.style.cssText='inset:38px 0 54px;width:auto;max-height:none;border-radius:0';return win;}
   home(){this.windows.forEach(w=>w.element.hidden=true);this.recentPanel.hidden=true;this.record('minimize',{home:true});}
   back(){if(!this.recentPanel.hidden){this.recentPanel.hidden=true;return;}this.home();}
-  recents(){this.recentPanel.replaceChildren();this.recentPanel.hidden=false;for(const win of [...this.windows.values()].reverse()){
+  recents(){this.recentPanel.replaceChildren();if(this.windows.size===0){this.home();this.record('recents',{count:0});return;}this.recentPanel.hidden=false;for(const win of [...this.windows.values()].reverse()){
     const card=this.host.element('button',win.name,'os-recent-card',this.recentPanel);let x=null;
     card.addEventListener('click',()=>{this.recentPanel.hidden=true;this.windows.forEach(w=>w.element.hidden=true);this.focus(win.id);});
     card.addEventListener('touchstart',e=>{x=e.changedTouches[0].clientX;},{passive:true});
