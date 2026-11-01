@@ -86,7 +86,7 @@ body:has(.navmobile) .recent-screen .appcard:active{transform:scale(.96)}
   action(parent,label,callback,cls) {const b=this.element('button',label,cls,parent);b.addEventListener('click',()=>{this.audit('action',{label});callback();});return b;}
   open(name) {
     this.close();
-    if(this.environment.mode!=='desktop'){this.state.history.push(this.state.foreground);this.state.foreground=name;this.state.recent=false;}
+    if(this.environment.mode!=='desktop'){if(!this.restoring && this.state.foreground && this.state.foreground!==name)this.state.history.push(this.state.foreground);this.state.foreground=name;this.state.recent=false;}
     this.state.windows = this.state.windows.filter(x=>x!==name);
     this.state.windows.push(name);const w=this.element('section',null,'window',this.root);w.setAttribute('role','dialog');w.setAttribute('aria-label',name);this.window=w;if(this.environment.mode!=='desktop')w.classList.add('mobile-application');
     const bar=this.element('div',null,'windowbar',w);this.element('strong',name,null,bar);if(this.environment.mode==='desktop')this.action(bar,'×',()=>this.close());
@@ -98,6 +98,7 @@ body:has(.navmobile) .recent-screen .appcard:active{transform:scale(.96)}
     this.audit('window_open',{name});
   }
   close(){if(this.window){this.window.remove();this.window=null;}}
+  showExisting(name){this.restoring=true;try{this.open(name);}finally{this.restoring=false;}}
   appSwitcher(){
     if(this.environment.mode==='desktop')return;this.close();this.state.recent=true;const w=this.element('section',null,'window mobile-application recent-screen',this.root);this.window=w;w.setAttribute('aria-label','Open applications');
     const bar=this.element('div',null,'windowbar',w);this.element('strong','Open applications',null,bar);
@@ -108,12 +109,12 @@ body:has(.navmobile) .recent-screen .appcard:active{transform:scale(.96)}
       const card=this.action(cards,name,()=>this.open(name),'appcard');
       this.element('small','Tap to reopen · swipe horizontally to close',null,card);
       let start=0;card.addEventListener('touchstart',e=>{start=e.changedTouches[0].clientX},{passive:true});
-      card.addEventListener('touchend',e=>{if(Math.abs(e.changedTouches[0].clientX-start)>75){this.state.windows=this.state.windows.filter(x=>x!==name);this.audit('application_swiped',{name});this.appSwitcher();}},{passive:true});
+      card.addEventListener('touchend',e=>{if(Math.abs(e.changedTouches[0].clientX-start)>75){this.state.windows=this.state.windows.filter(x=>x!==name);if(this.state.foreground===name)this.state.foreground=null;this.audit('application_swiped',{name});this.appSwitcher();}},{passive:true});
     });
   }
-  back(){if(this.environment.mode==='desktop')return this.close();if(this.state.recent){this.state.recent=false;return this.state.foreground?this.open(this.state.foreground):this.close();}const previous=this.state.history.pop();if(previous)return this.open(previous);this.hide();}
+  back(){if(this.environment.mode==='desktop')return this.close();if(this.state.recent){this.state.recent=false;return this.state.foreground?this.showExisting(this.state.foreground):this.close();}const previous=this.state.history.pop();if(previous)return this.showExisting(previous);this.hide();}
   hide(){this.close();this.state.recent=false;this.state.foreground=null;this.audit('home');}
-  onResize(){const previous=this.environment.mode;this.environment=this.detect();this.audit('resize',{width:innerWidth,height:innerHeight});if(previous!==this.environment.mode){this.root.remove();this.close();this.render();if(this.environment.mode!=='desktop'&&this.state.foreground)this.open(this.state.foreground);}}
+  onResize(){const previous=this.environment.mode;this.environment=this.detect();this.audit('resize',{width:innerWidth,height:innerHeight});if(previous!==this.environment.mode){const recent=this.state.recent;this.root.remove();this.close();this.render();if(this.environment.mode!=='desktop'){if(recent)this.appSwitcher();else if(this.state.foreground)this.showExisting(this.state.foreground);}}}
   audit(type,detail={}) {if(!this.state)return;this.state.events.push({type,time:new Date().toISOString(),detail});if(this.state.events.length>300)this.state.events.shift();this.analyze();}
   async startR(){
     try{
