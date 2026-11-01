@@ -6,13 +6,14 @@ export class ServiceWorkbench {
       {name:'Domain & DNS',desc:'Design and validate DNS zone records, then export a change plan.',kind:'dns'},
       {name:'Software',desc:'Create a portable starter project specification.',kind:'software'},
       {name:'Infrastructure',desc:'Build a deployment checklist for your environment.',kind:'infrastructure'},
+      {name:'Personal Server',desc:'Prepare a customer-owned server setup plan and authorization-ready runtime manifest.',kind:'server'},
       {name:'Business Technology',desc:'Prepare a business systems requirements brief.',kind:'business'}
     ];
     this.registry.catalog.instances=this.catalog;
     this.output=null;
   }
   svg(name){
-    const icons={dns:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a16 16 0 0 1 0 18M12 3a16 16 0 0 0 0 18"/>',software:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m10 9-3 3 3 3m4-6 3 3-3 3"/>',infrastructure:'<rect x="3" y="3" width="18" height="7" rx="1"/><rect x="3" y="14" width="18" height="7" rx="1"/><path d="M7 7h1M7 18h1"/>',business:'<rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V4h8v3M3 12h18"/'};
+    const icons={dns:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a16 16 0 0 1 0 18M12 3a16 16 0 0 0 0 18"/>',software:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m10 9-3 3 3 3m4-6 3 3-3 3"/>',infrastructure:'<rect x="3" y="3" width="18" height="7" rx="1"/><rect x="3" y="14" width="18" height="7" rx="1"/><path d="M7 7h1M7 18h1"/>',server:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 10h16M4 15h16M8 7h1M8 13h1M8 18h1"/>',business:'<rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V4h8v3M3 12h18"/'};
     const wrapper=document.createElement('span');wrapper.className='service-icon';wrapper.innerHTML='<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(icons[name]||icons.infrastructure)+'</svg>';return wrapper;
   }
   render(parent){
@@ -30,9 +31,9 @@ export class ServiceWorkbench {
     this.workspace.replaceChildren();const e=(tag,text,cls,p)=>this.host.element(tag,text,cls,p);
     e('h3',item.name,null,this.workspace);
     const form=e('form',null,null,this.workspace);
-    const label=e('label',item.kind==='dns'?'Domain name':item.kind==='software'?'Project name':'Project or organization',null,form);
+    const label=e('label',item.kind==='dns'?'Domain name':item.kind==='software'?'Project name':item.kind==='server'?'Server name or hostname':'Project or organization',null,form);
     const input=e('input',null,null,label);input.required=true;input.maxLength=150;input.placeholder=item.kind==='dns'?'example.com':'My project';
-    const notesLabel=e('label',item.kind==='dns'?'Desired records (one per line: TYPE NAME VALUE)':'Requirements / environment',null,form);
+    const notesLabel=e('label',item.kind==='dns'?'Desired records (one per line: TYPE NAME VALUE)':item.kind==='server'?'Operating system, access method and desired configuration (do not enter passwords or keys)':'Requirements / environment',null,form);
     const notes=e('textarea',null,null,notesLabel);notes.rows=4;notes.maxLength=8000;notes.placeholder=item.kind==='dns'?'A @ 192.0.2.1':'Describe the intended outcome';
     const generate=e('button','Generate downloadable plan',null,form);generate.type='submit';
     form.addEventListener('submit',event=>{event.preventDefault();const runtime=this.host.orchestrator.create(item.kind,{project:input.value.trim(),requirements:notes.value.trim()});const manifest=this.host.orchestrator.generate(runtime);const result={runtimeManifest:manifest,schema:'infrastruct.pro/workbench/v1',kind:item.kind,project:input.value.trim(),requirements:notes.value.trim(),generatedAt:new Date().toISOString(),status:'planning-only',notice:'No changes have been applied to any external service.'};if(item.kind==='dns'){result.records=result.requirements.split(/\n/).map(x=>x.trim()).filter(Boolean);result.instructions='Review records and authorize changes at your DNS provider. Never paste API tokens into this workstation.';}this.export(result);this.host.audit('service_plan_generated',{kind:item.kind});});

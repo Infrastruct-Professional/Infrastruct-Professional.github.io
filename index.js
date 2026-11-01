@@ -1,3 +1,4 @@
+import { RemoteExecutionAdapter } from './remote-adapter.js';
 import { RuntimeOrchestrator } from './orchestrator.js';
 import { ShopifyCommerce } from './commerce.js';
 import { ServiceWorkbench } from './service.js';
@@ -10,6 +11,8 @@ class InfrastructProfessional {
     this.lifecycle = { nextId: 1, roundTrips: 0, roundRobinCursor: 0, tasks: [], draining: false };
     this.register('lifecycle', this.lifecycle);
     this.register('state', this.state);
+    this.remote=new RemoteExecutionAdapter(this);
+    this.register('remote',this.remote.registry);
     this.orchestrator=new RuntimeOrchestrator(this);
     this.register('orchestrator',this.orchestrator.registry);
     this.services=new ServiceWorkbench(this);
