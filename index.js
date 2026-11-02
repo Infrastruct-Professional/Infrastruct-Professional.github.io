@@ -242,7 +242,7 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
       const mailMenu=this.element('details',null,'brand-submenu brand-primary-choice',brandMenu);
       const mailSummary=this.element('summary','MAIL','brand-menu-item',mailMenu);comment(mailSummary,'EuroDNS mail access and provider sign-in.');
       mailMenu.addEventListener('toggle',()=>{if(mailMenu.open)for(const other of brandMenu.querySelectorAll('.brand-primary-choice'))if(other!==mailMenu)other.open=false;});
-      for(const [title,description] of [['EuroDNS Login','Open the official EuroDNS account login window.'],['Webmail Help','Open EuroDNS webmail access instructions.']]){const link=this.element('button',title.toUpperCase(),null,mailMenu);link.type='button';comment(link,description);link.addEventListener('click',()=>{this.toggleBrandMenu(false);this.webOS.open('Mail');this.audit('submenu_select',{label:'Mail',name:title});});}
+      for(const [title,description] of [['Mail','Open the Open-Xchange mail access window.'],['Mail Login','Open the dedicated Open-Xchange sign-in window.'],['Mail Help','Open EuroDNS webmail instructions.']]){const link=this.element('button',title.toUpperCase(),null,mailMenu);link.type='button';comment(link,description);link.addEventListener('click',()=>{this.toggleBrandMenu(false);this.webOS.open(title);this.audit('submenu_select',{label:'Mail',name:title});});}
       const search=this.element('input',null,'brand-menu-search',brandMenu);
       search.type='search';search.placeholder='Search as you type...';search.setAttribute('aria-label','Search as you type through website index');
       const searchResults=this.element('div',null,'brand-menu-search-results',brandMenu);searchResults.hidden=true;

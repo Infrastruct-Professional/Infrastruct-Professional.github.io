@@ -146,3 +146,7 @@
 ## Mail provider launcher (2026-11-02)
 - `mail/mail-system.js` owns the EuroDNS mail access window and official EuroDNS sign-in/help links. Login happens only on EuroDNS; the public GitHub Pages site never receives mail passwords or session tokens.
 - The Mail menu and site index open the launcher in the existing Web OS window system. This is not private access control: real owner-only access requires trusted identity and server-side authorization, not browser-side visibility checks.
+
+## Open-Xchange mail correction (2026-11-02)
+- EuroDNS confirms mailbox login at `https://www.openxchange.eu/appsuite/` (full email address plus mailbox password), separate from EuroDNS account management.
+- Mail, Mail Login and Mail Help are distinct Web OS windows. External sign-in remains on the official Open-Xchange origin; no credentials or tokens enter the public site.
