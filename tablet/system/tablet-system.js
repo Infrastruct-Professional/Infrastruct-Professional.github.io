@@ -5,10 +5,10 @@ export class TabletSystem extends RuntimeSystem {
   constructor(host){super(host,'tablet');this.register('recents');}
   mount(root){super.mount(root);this.installMobile();}
   installMobile(){new DesktopWindowSystem(this.host).installStyles();this.nav=this.host.element('nav',null,'os-mobile-nav',this.root);this.nav.setAttribute('aria-label','System navigation');
-    for(const [label,fn] of [['‹',()=>this.back()],['○',()=>this.home()],['▢',()=>this.recents()]]){const b=this.host.element('button',label,null,this.nav);b.addEventListener('click',fn);}
+    for(const [label,fn] of [['‹',()=>this.back()],['○',()=>this.home()],['▢',()=>this.recents()]]){const b=this.host.element('button',label,'os-mobile-nav-button',this.nav);b.type='button';b.setAttribute('aria-label',label==='‹'?'Back':label==='○'?'Home':'Recent applications');b.addEventListener('click',fn);}
     this.recentPanel=this.host.element('section',null,'os-recents',this.root);this.recentPanel.hidden=true;
   }
-  open(name,description){this.recentPanel.hidden=true;this.windows.forEach(w=>w.element.hidden=true);const win=super.open(name,description);if(win.element.style.cssText)return win;win.element.style.cssText='inset:38px 0 54px;width:auto;max-height:none;border-radius:0';return win;}
+  open(name,description){this.recentPanel.hidden=true;this.windows.forEach(w=>w.element.hidden=true);const win=super.open(name,description);win.element.style.cssText='inset:38px 0 calc(54px + env(safe-area-inset-bottom));width:auto;max-height:none;border-radius:0';return win;}
   home(){this.windows.forEach(w=>w.element.hidden=true);this.recentPanel.hidden=true;this.record('minimize',{home:true});}
   dismissRecents(){if(this.recentPanel&&!this.recentPanel.hidden){this.recentPanel.hidden=true;this.record('recents',{dismissed:true});}}
   back(){if(!this.recentPanel.hidden){this.recentPanel.hidden=true;return;}this.home();}

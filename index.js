@@ -252,10 +252,7 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
     const footer=this.element('footer',null,null,this.root);
     this.element('span','© '+new Date().getFullYear()+' Infrastruct Professional',null,footer);
     this.runtimeLabel=this.element('span','JS runtime ready · R initializing','muted',footer);
-    if(this.environment.mode!=='desktop') {
-      const nav=this.element('nav',null,'navmobile',this.root);
-      this.action(nav,'‹',()=>this.back());this.action(nav,'○',()=>this.hide());this.action(nav,'▢',()=>this.appSwitcher());
-    }
+    // Tablet and mobile navigation is owned exclusively by the active Web OS system.
   }
   selectFreePlan(content=null){
     if(!this.account.hasIdentity()){this.account.open('Sign in / Sign up');return;}

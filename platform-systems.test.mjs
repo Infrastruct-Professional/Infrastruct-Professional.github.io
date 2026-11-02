@@ -14,3 +14,9 @@ test('Web OS delegates to real modules in all four platform system directories',
   assert.deepEqual(Object.keys(os.systems),['desktop','tablet','mobile']);
   assert.deepEqual(Object.values(os.systems).map(system=>system.name),['desktop','tablet','mobile']);
 });
+test('tablet and mobile share one dedicated compact system navigation implementation',()=>{
+  const tablet=new TabletSystem({});const mobile=new MobileSystem({});
+  assert.equal(typeof tablet.installMobile,'function');
+  assert.equal(mobile.installMobile,tablet.installMobile);
+  assert.equal(mobile.name,'mobile');
+});
