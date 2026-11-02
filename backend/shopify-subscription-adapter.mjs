@@ -10,7 +10,8 @@ export class ShopifySubscriptionAdapter {
     });
     this.registry.catalog.instances.push(this.products);
   }
-  readiness(){return {shop:this.shopDomain,productCount:Object.keys(this.products).length,productStatus:'draft',sellingPlans:'not-configured',checkout:'disabled',customerIdentity:'not-configured',webhookPersistence:'not-configured',entitlementReconciliation:'not-configured',productionReady:false};}
+  readiness(){return {shop:this.shopDomain,productCount:Object.keys(this.products).length,productStatus:'draft',sellingPlans:'none-for-connected-app',subscriptionApiAccess:'missing-required-scopes',checkout:'disabled',customerIdentity:'not-configured',webhookPersistence:'not-configured',entitlementReconciliation:'not-configured',productionReady:false};}
+  checkScopes(scopes=[]){const granted=new Set(scopes);const required=['write_products','read_customer_payment_methods','read_own_subscription_contracts','write_own_subscription_contracts'];const missing=required.filter(scope=>!granted.has(scope));return {required,missing,eligible:missing.length===0};}
   interpretWebhook(topic,payload){
     const recognized=['subscription_contracts/create','subscription_contracts/update','subscription_billing_attempts/success','subscription_billing_attempts/failure','app_subscriptions/update'];
     const event={topic,recognized:recognized.includes(topic),reference:typeof payload?.admin_graphql_api_id==='string'?payload.admin_graphql_api_id:null,decision:'audit-only',grantEntitlement:false};

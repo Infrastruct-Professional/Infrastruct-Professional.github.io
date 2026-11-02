@@ -17,3 +17,11 @@ test('webhook interpretation cannot grant access even for recognized events',()=
    assert.equal(event.decision,'audit-only');
  }
 });
+
+test('subscription API access fails closed when required Shopify scopes are missing',()=>{
+ const adapter=new ShopifySubscriptionAdapter();
+ const check=adapter.checkScopes(['write_products','read_products','write_checkouts']);
+ assert.equal(check.eligible,false);
+ assert.deepEqual(check.missing,['read_customer_payment_methods','read_own_subscription_contracts','write_own_subscription_contracts']);
+ assert.equal(adapter.readiness().subscriptionApiAccess,'missing-required-scopes');
+});
