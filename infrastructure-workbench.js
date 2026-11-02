@@ -29,6 +29,8 @@ export class InfrastructureWorkbench {
     for(const [name,url] of this.sources){const a=this.el('a',name,null,sources);a.href=url;a.target='_blank';a.rel='noopener noreferrer';}
   }
   renderTools(content){
+    this.host.engineeringCatalog.render(content,this.host.engineeringCatalogSelection||'');
+    this.host.engineeringCatalogSelection='';
     const vault=this.host.planStorage;
     if(!vault.available()){this.el('p','Planning is disabled: persistent browser storage and Web Crypto are required. Enable site storage in browser settings and reload.','workbench-intro',content);return;}
     const gate=this.el('section',null,'workbench-stage',content);
