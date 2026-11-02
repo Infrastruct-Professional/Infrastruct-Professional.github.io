@@ -105,3 +105,8 @@
 - `services/` contains WHOIS, DNS-provider, hosting-provider and secure-shell booth implementations.
 - The public entrypoint remains root `index.html` -> `index.js`; all JavaScript module imports use the updated relative paths.
 - This is source organization, not proof of functional live backend services or verified browser security.
+
+## Mobile menu and browser detection reconciliation (2026-11-02)
+- The header menu control is 30×30 CSS pixels on mobile, with a 24×24 image. It must not be confused with the separate Android-style system navigation bar.
+- `browser/detect/browser-detection.js` owns browser, OS and viewport-mode detection. `index.js` delegates to this system during initial construction and viewport resize.
+- Mobile and tablet have one navigation bar owned by the Web OS. Visual checks on real devices remain outstanding.
