@@ -55,3 +55,14 @@ test('duplicate signed Shopify webhook cannot repeat event handling',async()=>{
  const first=await h.request('/webhooks/shopify',args),second=await h.request('/webhooks/shopify',args);
  assert.equal(first.status,202);assert.equal(second.payload.duplicate,true);assert.equal(h.service.registry.events.length,1);
 });
+
+test('Shopify readiness requires authentication and reports missing subscription scopes',async()=>{
+ const h=new Harness();
+ const unauthenticated=await h.request('/shopify/readiness',{method:'GET'});
+ assert.equal(unauthenticated.status,401);
+ const authenticated=await h.request('/shopify/readiness',{method:'GET',token:'local-test-token'});
+ assert.equal(authenticated.status,200);
+ assert.equal(authenticated.payload.launchGate.ready,false);
+ assert.ok(authenticated.payload.launchGate.missingScopes.includes('write_own_subscription_contracts'));
+ assert.equal(authenticated.payload.checkout,'disabled');
+});
