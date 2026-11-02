@@ -55,3 +55,6 @@ The connected **Infrastruct Professional** Shopify app installation has `write_p
 
 ### Subscription contract reconciliation (offline policy)
 `shopify-contract-reconciler.mjs` converts independently verified contract records into candidate entitlement decisions only when a trusted backend has fetched the contract, verified the customer identity, confirmed payment, and matched a single allowlisted product. **It does not fetch Shopify data or authenticate callers itself.** Never set the `verification` flags from browser or webhook content. No HTTP route grants entitlements; the backend remains undeployed.
+
+### Authenticated Shopify Admin read client (not deployed)
+`shopify-admin-client.mjs` implements a server-only, read-only GraphQL transport with a validated shop domain, API version, request timeout, strict errors and a scope-inspection method. Tests use an injected fake transport; **no live API credentials have been configured**. Keep `SHOPIFY_ADMIN_ACCESS_TOKEN` in a server secret manager, never in GitHub Pages. A future verified contract-fetch method must be implemented against Shopify's approved subscription API schema and independently confirmed billing state before feeding the policy reconciler. The current client does not fetch subscription contracts or grant access.
