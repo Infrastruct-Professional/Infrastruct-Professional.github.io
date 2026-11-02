@@ -16,9 +16,9 @@ export class PublicIPSystem {
     this.host.element('span','/','public-ip-label',field);
     this.identity=this.host.element('span','Guest','public-ip-label banner-guest',field);
     this.button.type='button';this.button.disabled=true;
-    this.button.setAttribute('aria-label','Public IP address; click to copy');
+    this.button.setAttribute('aria-label','Public IP address; double-click to copy');
     this.button.setAttribute('aria-live','polite');
-    this.button.addEventListener('click',()=>this.copyAddress());
+    this.button.addEventListener('dblclick',event=>{event.preventDefault();this.copyAddress();});
     if(navigator.onLine===false)this.offline();else this.fetchAddress();
   }
   setIdentity(value){if(this.identity?.isConnected)this.identity.textContent=value;}
@@ -45,7 +45,7 @@ export class PublicIPSystem {
       if(typeof ip!=='string'||!/^([0-9a-fA-F:.]+)$/.test(ip)||ip.length>45)throw new Error('Invalid IP response');
       if(request!==this.requestId)return;
       this.address=ip;const version=ip.includes(':')?'IPv6':'IPv4';
-      if(this.button?.isConnected){this.button.textContent=ip;this.button.className='public-ip-value is-online';this.button.disabled=false;this.button.title='Click to copy public IP address';}
+      if(this.button?.isConnected){this.button.textContent=ip;this.button.className='public-ip-value is-online';this.button.disabled=false;this.button.title='Double-click to copy public IP address';}
       this.registry.fetch.events.push({status:'success',version});this.host.audit('public_ip_resolved',{version});
     }catch(error){
       if(request!==this.requestId)return;
