@@ -1,3 +1,4 @@
+import { ShopifySubscriptionAdapter } from './shopify-subscription-adapter.mjs';
 /** Separate trusted executor scaffold. No live infrastructure changes or billing activation. Node 20+. */
 import http from 'node:http';
 import crypto from 'node:crypto';
@@ -12,6 +13,7 @@ export class TrustedExecutor {
     this.webhookSecret=config.SHOPIFY_WEBHOOK_SECRET||'';
     this.shopDomain=config.SHOPIFY_SHOP_DOMAIN||'k0yrr9-zr.myshopify.com';
     this.mode='dry-run';
+    this.shopifySubscriptions=new ShopifySubscriptionAdapter({shopDomain:this.shopDomain});
   }
   record(type,details={}){this.registry.events.push({type,time:new Date().toISOString(),...details});}
   send(res,status,payload,headers={}){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff',...headers});res.end(JSON.stringify(payload));}
@@ -37,12 +39,14 @@ export class TrustedExecutor {
       if(this.registry.webhookIds.size>=1024)this.registry.webhookIds.delete(this.registry.webhookIds.keys().next().value);
       this.registry.webhookIds.set(id,Date.now());
       // HMAC plus metadata is not payment or subscription verification. No entitlements are granted.
-      this.record('shopify_webhook_received',{topic,shop,id});
+      const interpreted=this.shopifySubscriptions.interpretWebhook(topic,(()=>{try{return JSON.parse(raw.toString('utf8'));}catch{return null;}})());
+      this.record('shopify_webhook_received',{topic,shop,id,recognized:interpreted.recognized});
       return this.send(res,202,{accepted:true,entitlementsUpdated:false},cors);
     }
     if(!this.authorized(req))return this.send(res,401,{error:'Authentication not configured or invalid'},cors);
     let body={};try{body=raw.length?JSON.parse(raw.toString('utf8')):{};}catch{return this.send(res,400,{error:'Invalid JSON'},cors);}
     if(req.method==='GET'&&url.pathname==='/plans')return this.send(res,200,{plans:[],status:'shopify-not-configured'},cors);
+    if(req.method==='GET'&&url.pathname==='/shopify/readiness')return this.send(res,200,this.shopifySubscriptions.readiness(),cors);
     if(req.method==='GET'&&url.pathname==='/entitlements')return this.send(res,200,{active:false,reason:'billing-not-configured'},cors);
     if(req.method==='GET'&&url.pathname==='/profile')return this.send(res,200,{authenticated:false,status:'unavailable',planName:null,renewalDate:null,features:[],reason:'customer-identity-and-billing-not-configured'},cors);
     if(req.method==='POST'&&url.pathname==='/checkout')return this.send(res,503,{error:'Shopify subscription checkout is not configured'},cors);
