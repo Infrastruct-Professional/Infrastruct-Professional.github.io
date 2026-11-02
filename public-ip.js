@@ -12,8 +12,6 @@ export class PublicIPSystem {
     header.insertBefore(this.label,field);
     this.browser=this.host.element('span',this.host.environment.browser,'public-ip-label banner-browser',field);
     this.button=this.host.element('button','Checking…','public-ip-value is-pending banner-ip',field);
-    this.hostname=this.host.element('span','Hostname: '+(location.hostname||'-'),'public-ip-label banner-hostname',field);
-    this.hostname.title='Website hostname, not the visitor device hostname';
     this.os=this.host.element('span',this.host.environment.os,'public-ip-label banner-os',field);
     this.host.element('span','@','public-ip-label',field);
     this.identity=this.host.element('span','Guest','public-ip-label banner-guest',field);
