@@ -127,6 +127,7 @@ export class RuntimeSystem {
     if(name==='Dashboard')this.host.dashboardSystem.render(content);
     else if(['Shop','Cart','Checkout'].includes(name))this.host.shop.render(content,name);
     else if(name==='Index')this.host.siteIndex.render(content);
+    else if(name==='Mail')this.host.mailSystem.render(content);
     else if(this.host.publicNavigation?.sections[name])this.host.publicNavigation.render(content,name);
     else if(name==='Plans')this.renderPlans(content);
     else if(name==='Tools'||name==='Services')this.host.infrastructure.render(content,name);

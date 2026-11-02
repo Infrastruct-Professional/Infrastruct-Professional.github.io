@@ -13,6 +13,8 @@ export class SiteIndex {
     for(const [group,names] of [['Network & identity',['WHOIS Lookup','DNS Providers']],['Data & generation',['Encoders','Random Generator']],['Hosting & access',['Web Hosting Providers','Secure Shell Booth']]])for(const name of names)add(name,'Services',group,'Browser-local service or directory');
     for(const stage of this.host.infrastructure.stages)add(stage.name,'Services','Infrastructure lifecycle',stage.goal+' · '+stage.checks.join(' · '));
     for(const entry of this.host.publicNavigation?.entries()||[])add(entry.title,entry.section,entry.section,entry.description);
+    add('EuroDNS Login','Mail','Mail access','Official EuroDNS provider authentication in a new browser tab');
+    add('Webmail Help','Mail','Mail access','EuroDNS webmail instructions and mailbox access');
     add('Encrypted local planning','Tools','Planning','Infrastructure checklist, local encrypted storage and project assessments');
     add('Session QR','Index','Web OS','Anonymous runtime session QR identifier, double-click to copy');
     add('Window EAN','Index','Web OS','Internal EAN-13 window identifier, double-click to copy');

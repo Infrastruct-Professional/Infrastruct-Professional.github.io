@@ -142,3 +142,7 @@
 - Public menu now includes About, Products, Services, Downloads, Uploads, Help, Support and Contact, each with submenus. Services retains its existing nested groups and working service navigation.
 - `public-navigation.js` owns informational page/submenu content for the seven additional sections. The window runtime renders these pages on desktop/tablet/mobile, and the site index includes their searchable entries.
 - Uploads, exports, contact channels and support services not yet deployed are clearly marked as planned; no backend or file handling is implied.
+
+## Mail provider launcher (2026-11-02)
+- `mail/mail-system.js` owns the EuroDNS mail access window and official EuroDNS sign-in/help links. Login happens only on EuroDNS; the public GitHub Pages site never receives mail passwords or session tokens.
+- The Mail menu and site index open the launcher in the existing Web OS window system. This is not private access control: real owner-only access requires trusted identity and server-side authorization, not browser-side visibility checks.
