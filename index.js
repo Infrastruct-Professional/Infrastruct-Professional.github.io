@@ -1,6 +1,7 @@
 import { WebOSVersion } from './web-os-version.js';
 import { BarcodeSystem } from './barcode-system.js';
 import { EngineeringToolCatalog } from './engineering-tool-catalog.js';
+import { SiteIndex } from './site-index.js';
 import { WhoisLookupService } from './whois-lookup-service.js';
 import { EncryptedPlanStorage } from './encrypted-plan-storage.js';
 import { HostingProviderService } from './hosting-provider-service.js';
@@ -38,6 +39,7 @@ class InfrastructProfessional {
     this.randomGenerator=new RandomGeneratorService(this);
     this.shellBooth=new SecureShellBooth(this);
     this.infrastructure=new InfrastructureWorkbench(this);
+    this.siteIndex=new SiteIndex(this);
     this.siteAPI=new SiteAPI(this);
     this.cookies=new CookieSystem(this);
     this.initialPlansOpened=false;
@@ -187,6 +189,7 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
         sub.addEventListener('toggle',()=>{if(sub.open)for(const other of brandMenu.querySelectorAll('.brand-submenu'))if(other!==sub)other.open=false;});
         if(label!=='Plans'){item.hidden=true;sub.hidden=true;this.planMenuItems.push(item,sub);}
       }
+      const indexButton=this.element('button','INDEX','brand-menu-item',brandMenu);indexButton.type='button';comment(indexButton,'Search the indexed tools, services, plans and Web OS capabilities.');indexButton.addEventListener('click',()=>{this.toggleBrandMenu(false);this.webOS.open('Index');});
       brandMenu.append(menuComment);
       this.brandButton=brandButton;this.brandMenu=brandMenu;
       this.account.mount(brandMenu);
