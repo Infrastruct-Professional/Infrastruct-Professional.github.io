@@ -89,3 +89,11 @@
 - `core-systems.js` owns cooperative background scheduling, and `orchestrator.js` owns ephemeral local runtime sessions. Neither provides actual OS process priority, physical RAM reservation, global pools or trusted server execution.
 - `browser/{cache,detect,login}`, `mobile`, `tablet`, and `desktop/window` are structural directories, not independently operational systems. Authentication is still simulated, not verified.
 - Future reconciliation: move environment detection into `browser/detect`, establish deliberate browser cache policy, replace simulated login with trusted authentication, add real viewport/browser end-to-end tests, and evaluate webR package pinning rather than relying on `/latest/`.
+
+## Platform system module ownership (2026-11-02)
+- `web-os.js` is the mode-selecting facade and contains no platform window implementation.
+- `desktop/system/runtime-base.js` defines shared browser-local application/window lifecycle. `desktop/system/desktop-system.js` owns the desktop system instance.
+- `desktop/window/system/window-system.js` implements desktop window creation, titlebar, dragging, resizing, task buttons and generated Web OS CSS.
+- `tablet/system/tablet-system.js` implements tablet navigation, full-screen applications and recents. `mobile/system/mobile-system.js` extends it with mobile system identity.
+- Platform modules are instantiated once by the Web OS facade and mounted based on browser environment detection. This does not create privileged operating-system access.
+- The separate `runtime-system.js` remains the JavaScript/webR audit coordinator; `index.R` remains the R audit implementation. The empty `.gitkeep` files may be removed once a directory has committed source files.
