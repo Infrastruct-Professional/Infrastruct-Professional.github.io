@@ -8,13 +8,13 @@ export class PublicIPSystem {
   }
   mount(header){
     const field=this.host.element('span',null,'public-ip-field',header);
-    this.label=this.host.element('span','Infrastructure Engineering Services','public-ip-label',field);
+    this.label=this.host.element('span','Infrastructure Engineering Services','public-ip-label banner-statement',field);
     this.host.element('span','/','public-ip-label',field);
-    this.browser=this.host.element('span',this.host.environment.browser,'public-ip-label',field);
-    this.button=this.host.element('button','Checking…','public-ip-value is-pending',field);
-    this.os=this.host.element('span',this.host.environment.os,'public-ip-label',field);
+    this.browser=this.host.element('span',this.host.environment.browser,'public-ip-label banner-browser',field);
+    this.button=this.host.element('button','Checking…','public-ip-value is-pending banner-ip',field);
+    this.os=this.host.element('span',this.host.environment.os,'public-ip-label banner-os',field);
     this.host.element('span','/','public-ip-label',field);
-    this.identity=this.host.element('span','Guest','public-ip-label',field);
+    this.identity=this.host.element('span','Guest','public-ip-label banner-guest',field);
     this.button.type='button';this.button.disabled=true;
     this.button.setAttribute('aria-label','Public IP address; click to copy');
     this.button.setAttribute('aria-live','polite');
