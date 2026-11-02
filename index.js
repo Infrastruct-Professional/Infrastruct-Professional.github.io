@@ -1,3 +1,4 @@
+import { RuntimeSystem } from './runtime-system.js';
 import { WebOSVersion } from './web-os-version.js';
 import { BarcodeSystem } from './barcode-system.js';
 import { EngineeringToolCatalog } from './engineering-tool-catalog.js';
@@ -66,6 +67,8 @@ class InfrastructProfessional {
     this.register('subscriptionProfile',this.profile.registry);
     this.register('commerce',this.commerce.registry);
     this.register('services',this.services.registry);
+    this.runtime=new RuntimeSystem(this);
+    this.register('runtime',this.runtime.registry);
     this.runtimeStatus=new RuntimeStatusSystem(this);
     this.dashboardSystem=new DashboardSystem(this);
     this.publicIP=new PublicIPSystem(this);
@@ -76,7 +79,7 @@ class InfrastructProfessional {
     this.backgroundSystem.start();
     this.audit('boot', { environment: this.environment });
     this.enqueue('health-check', () => this.audit('health_check', { mode: this.environment.mode }));
-    this.startR();
+    this.runtime.start();
     window.addEventListener('resize', () => this.onResize());
     window.addEventListener('pagehide', () => this.audit('pagehide'));
   }
@@ -314,24 +317,7 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
   back(){if(this.environment.mode==='desktop')return this.close();if(this.state.recent){this.state.recent=false;return this.state.foreground?this.showExisting(this.state.foreground):this.close();}const previous=this.state.history.pop();if(previous)return this.showExisting(previous);this.hide();}
   hide(){this.close();this.state.recent=false;this.state.foreground=null;this.webOS.active?.home?.();this.audit('home');}
   onResize(){const previous=this.environment.mode;this.environment=this.detect();this.audit('resize',{width:innerWidth,height:innerHeight});if(previous!==this.environment.mode){const recent=this.state.recent;this.toggleBrandMenu(false);document.removeEventListener('pointerdown',this.onStartOutside);document.removeEventListener('keydown',this.onStartEscape);this.barcodes.dismissSession();this.runtimeStatus.stop();this.webOS.active?.unmount();this.account.unmount();this.cookies.unmount();this.root.remove();this.close();this.render();if(this.environment.mode!=='desktop'){if(recent)this.appSwitcher();else if(this.state.foreground)this.showExisting(this.state.foreground);}}}
-  audit(type,detail={}) {if(!this.state)return;this.state.events.push({type,time:new Date().toISOString(),detail});if(this.state.events.length>300)this.state.events.shift();this.analyze();}
-  async startR(){
-    try{
-      const {WebR}=await import('https://webr.r-wasm.org/latest/webr.mjs');
-      this.webr=new WebR();await this.webr.init();
-      const code=await (await fetch('./index.R')).text();await this.webr.evalRVoid(code);
-      this.runtimeLabel.textContent='JS runtime ready · webR active';this.audit('webr_ready');
-    }catch(error){this.runtimeLabel.textContent='JS runtime ready · webR unavailable';this.audit('webr_unavailable',{message:String(error)});}
-  }
-  async analyze(){
-    if(!this.webr){return;}
-    if(this.analysisPending){this.analysisQueued=true;return;}
-    this.analysisPending=true;
-    try{
-      const types=this.state.events.map(e=>e.type);
-      const r=await this.webr.evalR(`as.list(table(c(${types.map(t=>JSON.stringify(t)).join(',')})))`);
-      this.state.analytics=await r.toJs();
-    }catch(e){this.state.analytics={error:String(e)};}finally{this.analysisPending=false;if(this.analysisQueued){this.analysisQueued=false;queueMicrotask(()=>this.analyze());}}
-  }
+  audit(type,detail={}) {if(!this.state)return;this.state.events.push({type,time:new Date().toISOString(),detail});if(this.state.events.length>300)this.state.events.shift();this.runtime.analyze();}
+
 }
 new InfrastructProfessional();

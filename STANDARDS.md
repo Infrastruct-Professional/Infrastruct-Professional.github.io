@@ -82,3 +82,10 @@
 ## Webhook safety checkpoint
 - Shopify webhook HMAC, exact expected shop, event metadata and in-memory duplicate detection are now implemented and covered by tests. Duplicate detection is not persistent and must not be treated as production replay protection.
 - Valid webhooks never grant subscription access. A verified authenticated customer-to-Shopify-contract mapping, paid/active state, cancellations, payment failure policy, durable event store and secure customer session are required first.
+
+## Runtime reconciliation (2026-11-02)
+- `runtime-system.js` is the browser-local coordinator for the JavaScript/webR lifecycle and R audit bridge; `index.R` is the authoritative R audit implementation. JavaScript creates the DOM and CSS; the static `index.html` only loads `index.js`.
+- The coordinator reports webR as active only after module initialization and successful evaluation of `index.R`. If webR cannot load, the JavaScript site remains operational and R status is unavailable; it must not claim that R statistics are running.
+- `core-systems.js` owns cooperative background scheduling, and `orchestrator.js` owns ephemeral local runtime sessions. Neither provides actual OS process priority, physical RAM reservation, global pools or trusted server execution.
+- `browser/{cache,detect,login}`, `mobile`, `tablet`, and `desktop/window` are structural directories, not independently operational systems. Authentication is still simulated, not verified.
+- Future reconciliation: move environment detection into `browser/detect`, establish deliberate browser cache policy, replace simulated login with trusted authentication, add real viewport/browser end-to-end tests, and evaluate webR package pinning rather than relying on `/latest/`.
