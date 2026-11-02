@@ -4,6 +4,7 @@ import { EncryptedPlanStorage } from './encrypted-plan-storage.js';
 import { HostingProviderService } from './hosting-provider-service.js';
 import { DNSProviderService } from './dns-provider-service.js';
 import { EncodingService } from './encoding-service.js';
+import { RandomGeneratorService } from './random-generator-service.js';
 import { SecureShellBooth } from './secure-shell-booth.js';
 import { InfrastructureWorkbench } from './infrastructure-workbench.js';
 import { AccountSystem } from './account-system.js';
@@ -30,6 +31,7 @@ class InfrastructProfessional {
     this.dnsProviders=new DNSProviderService(this);
     this.whois=new WhoisLookupService(this);
     this.encoding=new EncodingService(this);
+    this.randomGenerator=new RandomGeneratorService(this);
     this.shellBooth=new SecureShellBooth(this);
     this.infrastructure=new InfrastructureWorkbench(this);
     this.siteAPI=new SiteAPI(this);
