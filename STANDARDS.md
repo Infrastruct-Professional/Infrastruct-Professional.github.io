@@ -114,3 +114,10 @@
 - Pop-out/pop-in controls are installed exclusively by `DesktopWindowSystem.createWindow()`; the shared base creates no popup controls, so tablet/mobile application surfaces cannot display them.
 
 - On tablet/mobile the background motto is positioned below the Android-style navigation dock, with safe-area spacing; desktop layout remains unchanged.
+
+## Global, local, server and client runtime scopes (2026-11-02)
+- `global/global-system.js`: global coordination contract, unavailable until provisioned.
+- `local/local-system.js`: active browser-local execution and browser-managed storage; does not imply reserved physical memory.
+- `server/server-system.js`: trusted backend boundary, unavailable on static GitHub Pages until a separately deployed service is configured and verified.
+- `client/client-system.js`: browser-reported platform context, not verified device identity.
+- `RuntimeOrchestrator.scopeStatus()` provides read-only snapshots for the four registered scopes. No cross-network operations, authentication or server allocation are implied.

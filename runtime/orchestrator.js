@@ -7,6 +7,7 @@ export class RuntimeOrchestrator {
     this.adapters={browser:{available:true,execution:'local'},webR:{available:false,execution:'local'},remote:{available:false,execution:'requires-authorized-executor'}};
     this.registry.adapters.instances.push(this.adapters);
   }
+  scopeStatus(){return Object.fromEntries(Object.entries(this.scopes||{}).map(([name,system])=>[name,system.snapshot()]));}
   create(kind,requirements={}){
     const id=globalThis.crypto?.randomUUID?.()||('session-'+Date.now()+'-'+Math.floor(Math.random()*1e6));
     const session={id,kind,createdAt:new Date().toISOString(),state:'prepared',requirements:{...requirements},operations:[],artifacts:[]};

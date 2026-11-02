@@ -1,4 +1,8 @@
 import { RuntimeSystem } from './runtime/runtime-system.js';
+import { GlobalSystem } from './global/global-system.js';
+import { LocalSystem } from './local/local-system.js';
+import { ServerSystem } from './server/server-system.js';
+import { ClientSystem } from './client/client-system.js';
 import { BrowserDetectionSystem } from './browser/detect/browser-detection.js';
 import { WebOSVersion } from './web-os-version.js';
 import { BarcodeSystem } from './barcode-system.js';
@@ -60,6 +64,11 @@ class InfrastructProfessional {
     this.register('state', this.state);
     this.remote=new RemoteExecutionAdapter(this);
     this.register('remote',this.remote.registry);
+    this.globalSystem=new GlobalSystem(this);
+    this.localSystem=new LocalSystem(this);
+    this.serverSystem=new ServerSystem(this);
+    this.clientSystem=new ClientSystem(this);
+    for(const [scope,system] of Object.entries({global:this.globalSystem,local:this.localSystem,server:this.serverSystem,client:this.clientSystem}))this.register(scope,system.registry);
     this.orchestrator=new RuntimeOrchestrator(this);
     this.register('orchestrator',this.orchestrator.registry);
     this.services=new ServiceWorkbench(this);
@@ -69,6 +78,7 @@ class InfrastructProfessional {
     this.register('subscriptionProfile',this.profile.registry);
     this.register('commerce',this.commerce.registry);
     this.register('services',this.services.registry);
+    this.orchestrator.scopes={global:this.globalSystem,local:this.localSystem,server:this.serverSystem,client:this.clientSystem};
     this.runtime=new RuntimeSystem(this);
     this.register('runtime',this.runtime.registry);
     this.runtimeStatus=new RuntimeStatusSystem(this);
