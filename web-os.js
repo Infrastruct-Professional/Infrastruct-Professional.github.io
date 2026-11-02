@@ -162,7 +162,7 @@ export class DesktopSystem extends RuntimeSystem {
   enableDrag(win){
     let drag=null;
     win.bar.addEventListener('pointerdown',e=>{
-      if(e.button!==0||e.target.closest('button')||win.maximized||win.popup)return;
+      if(e.button!==0||e.target.closest('button,input,select,textarea')||win.maximized||win.popup)return;
       const rect=win.element.getBoundingClientRect();drag={pointer:e.pointerId,x:e.clientX-rect.left,y:e.clientY-rect.top};
       win.bar.setPointerCapture(e.pointerId);this.focus(win.id);
     });
