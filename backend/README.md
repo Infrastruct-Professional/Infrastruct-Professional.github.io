@@ -52,3 +52,6 @@ Before launch: configure a Shopify subscription-capable app and selling plan gro
 
 #### Verified Shopify access check — 2026-11-02
 The connected **Infrastruct Professional** Shopify app installation has `write_products` but **does not have** `read_customer_payment_methods`, `read_own_subscription_contracts`, or `write_own_subscription_contracts`. Its `sellingPlanGroups(first:20)` query returned no groups. Do not attempt `sellingPlanGroupCreate` until an authorized subscription app is installed/approved and granted the necessary scopes. See [Shopify subscription app requirements](https://shopify.dev/docs/apps/build/purchase-options/subscriptions/selling-plans/build-a-selling-plan) and [Shopify access scopes](https://shopify.dev/docs/api/usage/access-scopes).
+
+### Subscription contract reconciliation (offline policy)
+`shopify-contract-reconciler.mjs` converts independently verified contract records into candidate entitlement decisions only when a trusted backend has fetched the contract, verified the customer identity, confirmed payment, and matched a single allowlisted product. **It does not fetch Shopify data or authenticate callers itself.** Never set the `verification` flags from browser or webhook content. No HTTP route grants entitlements; the backend remains undeployed.
