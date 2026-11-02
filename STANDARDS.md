@@ -155,3 +155,8 @@
 - `cloud/cloud-system.js` defines provider-neutral cloud, hybrid, multi-cloud and private-cloud architecture blueprints across identity, networking, compute, storage, security, observability, recovery and cost.
 - `site/site-system.js` defines website engineering blueprints for domains, hosting, TLS, frontend, backend, performance and monitoring.
 - Both have class registries, dedicated Web OS windows and menu/index entries. Generated blueprints remain browser-local and are not deployed or persisted; actual infrastructure provisioning requires a trusted authorized backend.
+
+## Shopify plan catalogue reconciliation (2026-11-02)
+- Connected Shopify shop: `k0yrr9-zr.myshopify.com`, EUR. Three existing draft products are mapped by product and variant GID to Starter (€19/month), Professional (€59/month), Enterprise (€199/month). Free remains a browser-local zero-charge plan without a Shopify product.
+- Shopify draft status and pending selling plans are shown in the Plan System; the read-only SiteAPI exposes the mappings. This is a verified snapshot, not live browser-side Admin API access.
+- Paid checkout remains disabled until Shopify recurring selling plans, a secure server-side checkout service, authenticated customer association, webhook signature verification and entitlement reconciliation are deployed and tested. Never publish drafts or claim a subscription is active based on a browser redirect.

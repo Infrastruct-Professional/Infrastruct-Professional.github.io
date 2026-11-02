@@ -41,14 +41,14 @@ export class ShopifyCommerce {
     const section=e('section',null,'commerce-section',parent);
     e('div','SUBSCRIPTION PLANS','eyebrow',section);
     e('h2','Infrastruct Professional subscriptions',null,section);
-    e('p','Subscribe for access to Infrastruct Professional tools. Shopify handles recurring billing; your infrastructure remains yours. Plan names, prices and limits will appear after connection.',null,section);
+    e('p','Infrastruct Professional plans are mapped to existing Shopify draft products. Recurring billing requires selling plans, a trusted checkout service and verified entitlements before launch.',null,section);
     const status=e('p',this.config.enabled?'Connecting to Shopify…':'Subscription plans are being prepared. Shopify authentication and billing are not yet connected.','commerce-status',section);
     const list=e('div',null,'commerce-grid',section);
     if(!this.config.enabled){
       const drafts=this.catalog.publicPlans();
       for(const draft of drafts){
         const card=e('div',null,'commerce-card',list);
-        e('strong',draft.title,null,card);e('span',this.catalog.display(draft.monthlyCents)+' / month',null,card);e('small','Proposed annual billing: '+this.catalog.display(draft.annualCents)+' / year (15% discount)',null,card);e('small',draft.audience,null,card);
+        e('strong',draft.title,null,card);e('span',this.catalog.display(draft.monthlyCents)+' / month',null,card);e('small','Proposed annual billing: '+this.catalog.display(draft.annualCents)+' / year (15% discount)',null,card);e('small',draft.audience,null,card);if(draft.productId)e('small','Shopify product linked · DRAFT · Selling plan pending',null,card);
         const features=e('ul',null,'plan-features',card);for(const feature of draft.features)e('li',feature,null,features);
         const button=e('button','Subscription launching soon',null,card);button.disabled=true;
       }

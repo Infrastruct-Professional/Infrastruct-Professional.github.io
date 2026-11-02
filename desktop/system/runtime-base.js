@@ -150,6 +150,7 @@ export class RuntimeSystem {
         this.host.element('strong',plan.title,null,card);
         this.host.element('div',this.host.siteAPI.catalog.display(plan.monthlyCents)+' / month',null,card);
         this.host.element('small',plan.audience,null,card);
+        if(plan.productId){this.host.element('small','Shopify: '+plan.shopifyStatus+' · Subscription selling plan pending',null,card);this.host.element('small','Product linked to Shopify catalogue · Checkout and paid access disabled',null,card);}
         const list=this.host.element('ul',null,null,card);
         for(const feature of plan.features)this.host.element('li',feature,null,list);
         if(plan.id==='free'){this.host.element('small','Total due: €0.00 · No card required · Browser-session access',null,card);this.host.element('small','Essential session cookies are used for sign-in and Free functionality. Optional cookies require a separate choice.',null,card);const button=this.host.element('button',identified?'Confirm Free · €0.00':'Sign in to select Free',null,card);button.type='button';button.addEventListener('click',()=>this.host.selectFreePlan(content));}
