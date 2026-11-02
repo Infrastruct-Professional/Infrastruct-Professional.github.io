@@ -112,3 +112,5 @@
 - Mobile and tablet have one navigation bar owned by the Web OS. Visual checks on real devices remain outstanding.
 
 - Pop-out/pop-in controls are installed exclusively by `DesktopWindowSystem.createWindow()`; the shared base creates no popup controls, so tablet/mobile application surfaces cannot display them.
+
+- On tablet/mobile the background motto is positioned below the Android-style navigation dock, with safe-area spacing; desktop layout remains unchanged.
