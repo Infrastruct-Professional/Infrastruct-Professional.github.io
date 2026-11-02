@@ -9,7 +9,7 @@ class RuntimeSystem {
   register(name){this.registry[name]={instances:[],functions:{},nested:{},events:[]};}
   record(name,detail={}){this.registry[name]?.events.push(detail);this.host.audit('os_'+name,{system:this.name,...detail});}
   mount(root){this.root=root;root.dataset.system=this.name;this.record('focus',{mount:true});}
-  unmount(){this.windows.forEach(w=>{w.disposeScroll?.();w.element.remove();});this.windows.clear();this.root=null;}
+  unmount(){this.windows.forEach(w=>{if(w.popup)this.restorePop(w);w.disposeScroll?.();w.element.remove();});this.windows.clear();this.root=null;}
   createWindow(name,description){
     const id=++this.sequence,el=this.host.element('section',null,'os-window',this.root);
     el.setAttribute('role','dialog');el.setAttribute('aria-label',name);el.tabIndex=-1;
@@ -20,7 +20,33 @@ class RuntimeSystem {
     if((name==='Tools'||name==='Services')&&!this.host.freePlanSelected){this.host.audit('plan_entry_required',{service:name});name='Plans';el.setAttribute('aria-label','Plans');bar.querySelector('strong').textContent='Plans';}
     this.navigateContent(content,name,description,false);
     const win={id,name,element:el,bar,controls,content,history:[],minimized:false,maximized:false};
-    this.windows.set(id,win);this.installScrollArrows(win);this.focus(id);this.animateWindow(el,'open');this.record('open',{id,name});return win;
+    this.windows.set(id,win);this.installPopToggle(win);this.installScrollArrows(win);this.focus(id);this.animateWindow(el,'open');this.record('open',{id,name});return win;
+  }
+  installPopToggle(win){
+    const button=this.host.element('button','↗','os-pop-toggle',win.controls);
+    button.type='button';button.title='Pop out into separate browser window';button.setAttribute('aria-label','Pop out '+win.name);
+    button.addEventListener('click',()=>this.togglePop(win.id));win.popButton=button;
+  }
+  togglePop(id){
+    const win=this.windows.get(id);if(!win)return;
+    if(win.popup&&!win.popup.closed){this.restorePop(win);return;}
+    const popup=window.open('','infrastruct-window-'+id,'popup=yes,width=950,height=720,resizable=yes,scrollbars=yes');
+    if(!popup){this.host.audit('os_pop_blocked',{id});return;}
+    const doc=popup.document;doc.title=win.name+' — Infrastruct Professional';
+    for(const sheet of document.querySelectorAll('style,link[rel="stylesheet"]'))doc.head.appendChild(sheet.cloneNode(true));
+    const style=doc.createElement('style');style.textContent='html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#102336;color:#eaf6ff}.os-window.os-popped{position:fixed!important;inset:0!important;top:0!important;left:0!important;width:100%!important;height:100%!important;min-width:0!important;max-width:none!important;max-height:none!important;resize:none!important;border-radius:0!important}.os-window.os-popped .os-titlebar{cursor:default}';doc.head.appendChild(style);
+    win.returnParent=win.element.parentNode;win.returnNext=win.element.nextSibling;
+    win.popup=popup;win.element.classList.add('os-popped');doc.body.appendChild(win.element);
+    win.popButton.textContent='↙';win.popButton.title='Pop in to Web OS desktop';win.popButton.setAttribute('aria-label','Pop in '+win.name);
+    const restore=()=>this.restorePop(win);popup.addEventListener('pagehide',restore,{once:true});win.popupRestore=restore;
+    popup.focus();this.record('pop_out',{id});
+  }
+  restorePop(win){
+    const popup=win.popup;if(!popup)return;
+    win.popup=null;
+    if(this.windows.has(win.id)&&win.returnParent){win.returnParent.insertBefore(win.element,win.returnNext?.parentNode===win.returnParent?win.returnNext:null);win.element.classList.remove('os-popped');win.popButton.textContent='↗';win.popButton.title='Pop out into separate browser window';win.popButton.setAttribute('aria-label','Pop out '+win.name);this.focus(win.id);}
+    if(!popup.closed){popup.removeEventListener('pagehide',win.popupRestore);popup.close();}
+    this.record('pop_in',{id:win.id});
   }
   installScrollArrows(win){
     const {element,content}=win;
@@ -89,7 +115,7 @@ class RuntimeSystem {
       [{opacity:1,transform:'translateY(0) scale(1)',filter:'blur(0)'},{opacity:0,transform:'translateY(16px) scale(.78)',filter:'blur(12px)'}],
       {duration:opening?340:240,easing:opening?'cubic-bezier(.16,1,.3,1)':'cubic-bezier(.55,0,1,.45)',fill:'forwards'});
   }
-  close(id){const win=this.windows.get(id);if(!win)return;win.disposeScroll?.();this.windows.delete(id);if(this.focused===id)this.focused=null;this.record('close',{id});
+  close(id){const win=this.windows.get(id);if(!win)return;if(win.popup)this.restorePop(win);win.disposeScroll?.();this.windows.delete(id);if(this.focused===id)this.focused=null;this.record('close',{id});
     const animation=this.animateWindow(win.element,'close');
     if(animation)animation.finished.then(()=>win.element.remove()).catch(()=>win.element.remove());
     else win.element.remove();
