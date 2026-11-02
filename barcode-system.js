@@ -11,5 +11,21 @@ export class BarcodeSystem {
   attachWindow(win){const code=this.ean13(),label=this.host.element('span',null,'os-window-barcode',win.bar);label.title='Double-click to copy EAN-13: '+code;label.addEventListener('dblclick',event=>{event.stopPropagation();this.copyIdentifier(code,label);});label.append(this.barcodeSvg(code));win.bar.insertBefore(label,win.bar.querySelector('strong'));win.barcode=code;this.registry.windows.instances.push({id:win.id,code});this.host.audit('window_barcode_assigned',{window:win.name,id:win.id});}
   qrSvg(value){const qr=qrcode(0,'M');qr.addData(value,'Byte');qr.make();const size=qr.getModuleCount(),svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox',`0 0 ${size+8} ${size+8}`);svg.setAttribute('role','img');svg.setAttribute('aria-label','Browser session QR code');const bg=document.createElementNS(svg.namespaceURI,'rect');bg.setAttribute('width',String(size+8));bg.setAttribute('height',String(size+8));bg.setAttribute('fill','none');svg.append(bg);for(let row=0;row<size;row++)for(let col=0;col<size;col++){if(!qr.isDark(row,col))continue;const pixel=document.createElementNS(svg.namespaceURI,'rect');pixel.setAttribute('x',String(col+4));pixel.setAttribute('y',String(row+4));pixel.setAttribute('width','1');pixel.setAttribute('height','1');pixel.setAttribute('fill','#fff');svg.append(pixel);}return svg;}
   mountSession(header,version){const wrapper=this.host.element('button',null,'session-qr-button',header);wrapper.type='button';wrapper.title='Double-click to copy session QR value (not a sign-in credential)';wrapper.setAttribute('aria-label','View browser session QR');wrapper.append(this.qrSvg('infrastruct-session:'+this.sessionId));version.insertAdjacentElement('afterend',wrapper);wrapper.addEventListener('click',event=>{if(event.detail===1)this.showSession(wrapper);});wrapper.addEventListener('dblclick',event=>{event.preventDefault();this.copyIdentifier('infrastruct-session:'+this.sessionId,wrapper);});}
-  showSession(button){const existing=document.querySelector('.session-qr-detail');if(existing){existing.remove();return;}const panel=this.host.element('section',null,'session-qr-detail',this.host.root);panel.setAttribute('role','dialog');panel.setAttribute('aria-label','Session QR details');this.host.element('strong','Browser session QR',null,panel);panel.append(this.qrSvg('infrastruct-session:'+this.sessionId));this.host.element('p','This QR represents an anonymous browser-runtime session identifier. It does not authenticate, pair devices or transfer access.',null,panel);const copy=this.host.element('button','Copy session identifier',null,panel);copy.type='button';copy.addEventListener('click',()=>navigator.clipboard.writeText(this.sessionId));const close=this.host.element('button','Close',null,panel);close.type='button';close.addEventListener('click',()=>panel.remove());}
+  dismissSession(){
+    const panel=this.sessionPanel;if(!panel||!panel.isConnected)return;
+    panel.classList.remove('is-open');panel.setAttribute('aria-hidden','true');
+    this.sessionPanel=null;
+    const finish=()=>panel.remove();panel.addEventListener('transitionend',finish,{once:true});
+    setTimeout(finish,280);
+  }
+  showSession(button){
+    if(this.sessionPanel?.isConnected){this.dismissSession();return;}
+    const panel=this.host.element('section',null,'session-qr-detail',this.host.root);
+    this.sessionPanel=panel;panel.setAttribute('role','dialog');panel.setAttribute('aria-label','Session QR details');panel.setAttribute('aria-hidden','false');
+    this.host.element('strong','Browser session QR',null,panel);panel.append(this.qrSvg('infrastruct-session:'+this.sessionId));
+    this.host.element('p','This QR represents an anonymous browser-runtime session identifier. It does not authenticate, pair devices or transfer access.',null,panel);
+    const copy=this.host.element('button','Copy session identifier',null,panel);copy.type='button';copy.addEventListener('click',()=>navigator.clipboard.writeText(this.sessionId));
+    const close=this.host.element('button','Close',null,panel);close.type='button';close.addEventListener('click',()=>this.dismissSession());
+    requestAnimationFrame(()=>panel.classList.add('is-open'));
+  }
 }
