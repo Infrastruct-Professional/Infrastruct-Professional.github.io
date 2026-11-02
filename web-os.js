@@ -123,7 +123,8 @@ class RuntimeSystem {
     if((name==='Tools'||name==='Services')&&!this.host.freePlanSelected)name='Plans';
     if(win){win.name=name;win.element.setAttribute('aria-label',name);win.bar.querySelector('strong').textContent=name.toUpperCase();win.refreshSearch?.();}
     if(win?.history.length){const back=this.host.element('button','← Back','os-content-back',content);back.type='button';back.addEventListener('click',()=>{const previous=win.history.pop();this.navigateContent(content,previous,'',false);});}
-    if(['Shop','Cart','Checkout'].includes(name))this.host.shop.render(content,name);
+    if(name==='Dashboard')this.host.dashboardSystem.render(content);
+    else if(['Shop','Cart','Checkout'].includes(name))this.host.shop.render(content,name);
     else if(name==='Index')this.host.siteIndex.render(content);
     else if(name==='Plans')this.renderPlans(content);
     else if(name==='Tools'||name==='Services')this.host.infrastructure.render(content,name);
@@ -253,5 +254,5 @@ export class MobileSystem extends TabletSystem {
 export class WebOperatingSystem {
   constructor(host){this.host=host;this.registry={systems:{instances:[],functions:{},nested:{},events:[]}};this.systems={desktop:new DesktopSystem(host),tablet:new TabletSystem(host),mobile:new MobileSystem(host)};this.registry.systems.instances=Object.values(this.systems);this.active=null;}
   mount(mode,root){if(this.active)this.active.unmount();this.active=this.systems[mode]||this.systems.desktop;this.active.mount(root);this.host.audit('os_mount',{mode:this.active.name});}
-  open(name){const descriptions={Workspace:'Infrastructure workspaces and projects.',Plans:'Subscription plans and entitlements.',Systems:'System management and runtime diagnostics.'};return this.active?.open(name,descriptions[name]||'Infrastructure application');}
+  open(name){const descriptions={Workspace:'Infrastructure workspaces and projects.',Plans:'Subscription plans and entitlements.',Dashboard:'Local runtime dashboard.',Systems:'System management and runtime diagnostics.'};return this.active?.open(name,descriptions[name]||'Infrastructure application');}
 }
