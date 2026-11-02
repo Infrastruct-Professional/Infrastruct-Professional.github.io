@@ -21,7 +21,7 @@ export class RuntimeSystem {
     if((name==='Tools'||name==='Services')&&!this.host.freePlanSelected){this.host.audit('plan_entry_required',{service:name});name='Plans';el.setAttribute('aria-label','Plans');bar.querySelector('strong').textContent='PLANS';}
     this.navigateContent(content,name,description,false);
     const win={id,name,element:el,bar,controls,content,history:[],minimized:false,maximized:false};
-    this.windows.set(id,win);this.installScopedSearch(win,search);this.host.barcodes?.attachWindow(win);this.installPopToggle(win);this.installScrollArrows(win);this.focus(id);this.animateWindow(el,'open');this.record('open',{id,name});return win;
+    this.windows.set(id,win);this.installScopedSearch(win,search);this.host.barcodes?.attachWindow(win);this.installScrollArrows(win);this.focus(id);this.animateWindow(el,'open');this.record('open',{id,name});return win;
   }
   scopedDestinations(win){
     const name=win.name;

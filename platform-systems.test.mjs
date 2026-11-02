@@ -20,3 +20,9 @@ test('tablet and mobile share one dedicated compact system navigation implementa
   assert.equal(mobile.installMobile,tablet.installMobile);
   assert.equal(mobile.name,'mobile');
 });
+test('popup controls are installed by desktop windows only',()=>{
+  assert.equal(Object.hasOwn(DesktopWindowSystem.prototype,'createWindow'),true);
+  assert.equal(Object.hasOwn(TabletSystem.prototype,'createWindow'),false);
+  assert.equal(Object.hasOwn(MobileSystem.prototype,'createWindow'),false);
+  assert.match(DesktopWindowSystem.prototype.createWindow.toString(),/installPopToggle/);
+});

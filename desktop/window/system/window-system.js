@@ -1,6 +1,8 @@
 import { RuntimeSystem } from '../../system/runtime-base.js';
 /** Desktop window management and generated window styles. */
 export class DesktopWindowSystem extends RuntimeSystem {
+  createWindow(name,description){const win=super.createWindow(name,description);this.installPopToggle(win);return win;}
+
   constructor(host){super(host,'desktop');this.register('maximize');this.register('move');this.register('resize');this.register('snap');}
   mount(root){super.mount(root);this.installStyles();}
   installStyles(){if(document.getElementById('infrastruct-os-style'))return;
