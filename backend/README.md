@@ -64,3 +64,6 @@ The connected **Infrastruct Professional** Shopify app installation has `write_p
 
 ### Durable webhook replay marker (single host, not yet integrated)
 `webhook-replay-store.mjs` uses atomic exclusive-create filesystem markers and fsync to reject duplicate webhook IDs across restarts of a single host. It is **not** connected to the webhook HTTP handler, does not provide durable event payload processing, retries, retention, cross-host coordination or exactly-once effects. Production requires a transactional database/queue with atomic event acceptance, processing states, retries, auditing and retention policies. This local module is a tested building block only.
+
+### Recoverable audit-only webhook event journal
+`webhook-event-processor.mjs` stores event metadata and SHA-256 payload digests with `pending` and `audited` states. Duplicate event IDs are detected across local instances, and an interrupted event remains visibly pending. No customer data or raw webhook body is persisted by this module. This is **not yet connected to the HTTP webhook route** and is not a production queue: a multi-host database, crash-consistent directory synchronization, retry orchestration and operational monitoring are still required. Neither state grants entitlements.
