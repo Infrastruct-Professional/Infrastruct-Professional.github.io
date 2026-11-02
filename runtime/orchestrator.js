@@ -7,6 +7,7 @@ export class RuntimeOrchestrator {
     this.adapters={browser:{available:true,execution:'local'},webR:{available:false,execution:'local'},remote:{available:false,execution:'requires-authorized-executor'}};
     this.registry.adapters.instances.push(this.adapters);
   }
+  integrationStatus(){return this.integrations?.snapshot()||{};}
   protocolStatus(){return this.protocols?.snapshot()||{};}
   scopeStatus(){return Object.fromEntries(Object.entries(this.scopes||{}).map(([name,system])=>[name,system.snapshot()]));}
   create(kind,requirements={}){

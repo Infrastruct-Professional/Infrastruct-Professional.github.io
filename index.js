@@ -1,5 +1,6 @@
 import { RuntimeSystem } from './runtime/runtime-system.js';
 import { ProtocolRegistry } from './runtime/protocol-registry.js';
+import { IntegrationRegistry } from './runtime/integration-registry.js';
 import { GlobalSystem } from './global/global-system.js';
 import { LocalSystem } from './local/local-system.js';
 import { ServerSystem } from './server/server-system.js';
@@ -70,6 +71,8 @@ class InfrastructProfessional {
     this.serverSystem=new ServerSystem(this);
     this.clientSystem=new ClientSystem(this);
     for(const [scope,system] of Object.entries({global:this.globalSystem,local:this.localSystem,server:this.serverSystem,client:this.clientSystem}))this.register(scope,system.registry);
+    this.integrations=new IntegrationRegistry(this);
+    this.register('integrations',this.integrations.registry);
     this.protocols=new ProtocolRegistry(this);
     this.register('protocols',this.protocols.registry);
     this.orchestrator=new RuntimeOrchestrator(this);
@@ -83,6 +86,7 @@ class InfrastructProfessional {
     this.register('services',this.services.registry);
     this.orchestrator.scopes={global:this.globalSystem,local:this.localSystem,server:this.serverSystem,client:this.clientSystem};
     this.orchestrator.protocols=this.protocols;
+    this.orchestrator.integrations=this.integrations;
     this.runtime=new RuntimeSystem(this);
     this.register('runtime',this.runtime.registry);
     this.runtimeStatus=new RuntimeStatusSystem(this);

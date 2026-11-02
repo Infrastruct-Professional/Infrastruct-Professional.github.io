@@ -127,3 +127,8 @@
 - `url/`, `uri/`, `session/`, `pgp/`, `https/`, `http/`, `dhcp/`, `vpn/`, `ad/`, `nfs/`, `nfc/`, `gsm/`, `gps/`, `wifi/`, `firefox/`, `chrome/`, `safari/`, `lang/` each own a capability module registered by `runtime/protocol-registry.js`.
 - Browser capability detection does not request permission, perform privileged networking, connect to a VPN, access GPS coordinates, scan NFC, or execute SSH. Unsupported or unconfigured services must report unavailable.
 - `RuntimeOrchestrator.protocolStatus()` exposes the combined 22-namespace status snapshot.
+
+## Provider and operating-system integration modules (2026-11-02)
+- `telegram/`, `whatsapp/`, `github/`, `google/`, `microsoft/` own provider adapter contracts. Connection plans require administrator approval, credentials and trusted authorization; no accounts are connected or tokens embedded in GitHub Pages.
+- `linux/`, `debian/`, `fedora/`, `android/`, `ios/` own browser-detected OS compatibility adapters; detection is advisory and does not grant native privileges. Linux detection does not imply Debian/Fedora detection.
+- `runtime/integration-registry.js` instantiates and registers all ten systems; `RuntimeOrchestrator.integrationStatus()` exposes read-only status snapshots.
