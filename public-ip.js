@@ -13,7 +13,7 @@ export class PublicIPSystem {
     this.browser=this.host.element('span',this.host.environment.browser,'public-ip-label banner-browser',field);
     this.button=this.host.element('button','Checking…','public-ip-value is-pending banner-ip',field);
     this.os=this.host.element('span',this.host.environment.os,'public-ip-label banner-os',field);
-    this.host.element('span','/','public-ip-label',field);
+    this.host.element('span','@','public-ip-label',field);
     this.identity=this.host.element('span','Guest','public-ip-label banner-guest',field);
     this.button.type='button';this.button.disabled=true;
     this.button.setAttribute('aria-label','Public IP address; double-click to copy');
