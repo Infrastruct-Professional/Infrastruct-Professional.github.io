@@ -1,4 +1,4 @@
-import { PlanCatalog } from './plan-catalog.js';
+import { PlanCatalog } from '../plan-catalog.js';
 /** Public, read-only API contract for GitHub Pages. Not a trusted payment API. */
 export class SiteAPI {
   constructor(host){this.host=host;this.registry={plans:{instances:[],functions:{},nested:{},events:[]}};this.catalog=new PlanCatalog();}

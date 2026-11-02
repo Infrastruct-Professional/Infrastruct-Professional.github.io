@@ -121,3 +121,9 @@
 - `server/server-system.js`: trusted backend boundary, unavailable on static GitHub Pages until a separately deployed service is configured and verified.
 - `client/client-system.js`: browser-reported platform context, not verified device identity.
 - `RuntimeOrchestrator.scopeStatus()` provides read-only snapshots for the four registered scopes. No cross-network operations, authentication or server allocation are implied.
+
+## Protocol, connectivity and browser namespaces (2026-11-02)
+- `api/`, `cookies/`, `dns/` and `ssh/` own the existing public plan API contract, consent management, DNS provider links and SSH planning respectively; no trusted backend is implied.
+- `url/`, `uri/`, `session/`, `pgp/`, `https/`, `http/`, `dhcp/`, `vpn/`, `ad/`, `nfs/`, `nfc/`, `gsm/`, `gps/`, `wifi/`, `firefox/`, `chrome/`, `safari/`, `lang/` each own a capability module registered by `runtime/protocol-registry.js`.
+- Browser capability detection does not request permission, perform privileged networking, connect to a VPN, access GPS coordinates, scan NFC, or execute SSH. Unsupported or unconfigured services must report unavailable.
+- `RuntimeOrchestrator.protocolStatus()` exposes the combined 22-namespace status snapshot.
