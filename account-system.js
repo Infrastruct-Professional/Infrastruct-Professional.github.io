@@ -45,6 +45,7 @@ export class AccountSystem {
   simulateChatGPT(){
     if(this.config.enabled)return;
     this.demoSession={provider:'ChatGPT',type:'demo',startedAt:new Date().toISOString()};
+    this.host.cookies?.ensureEssential();
     this.authenticated=false;
     this.host.publicIP?.setIdentity?.('Demo · ChatGPT');
     this.host.audit('account_demo_sign_in',{provider:'ChatGPT',verified:false});
