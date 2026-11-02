@@ -15,9 +15,9 @@ export class CookieSystem {
     if(mainBanner)mainBanner.insertAdjacentElement('afterend',this.panel);
     this.panel.setAttribute('aria-label','Cookie preferences');
     this.host.element('strong','Cookie preferences',null,this.panel);
-    this.host.element('p','We use an essential cookie to remember your choice. Optional cookies are not currently used. Public plans work without accepting optional cookies.',null,this.panel);
+    this.host.element('p','The Free plan uses essential cookies for website functionality. Confirming Free acknowledges this use. Optional cookies are not required or enabled by plan activation.',null,this.panel);
     const actions=this.host.element('div',null,'cookie-actions',this.panel);
-    for(const [text,choice] of [['Essential only','essential'],['Accept optional','optional']]){
+    for(const [text,choice] of [['Use essential cookies','essential'],['Accept optional','optional']]){
       const button=this.host.element('button',text,null,actions);button.type='button';button.addEventListener('click',()=>this.save(choice));
     }
   }
