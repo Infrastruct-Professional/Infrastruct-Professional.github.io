@@ -28,6 +28,7 @@ export class RuntimeSystem {
     if(name==='Tools')return this.host.toolSystem.sections;
     if(name==='Services')return this.host.serviceSystem.sections;
     if(name==='Plans')return this.host.planSystem.sections;
+    if(this.host.publicNavigation?.sections[name])return this.host.publicNavigation.entries().filter(entry=>entry.section===name).map(entry=>({...entry,destination:name}));
     if(['Shop','Cart','Checkout'].includes(name))return this.host.serviceSystem.sections.filter(item=>['Shop','Cart','Checkout'].includes(item.title));
     return [];
   }
@@ -126,6 +127,7 @@ export class RuntimeSystem {
     if(name==='Dashboard')this.host.dashboardSystem.render(content);
     else if(['Shop','Cart','Checkout'].includes(name))this.host.shop.render(content,name);
     else if(name==='Index')this.host.siteIndex.render(content);
+    else if(this.host.publicNavigation?.sections[name])this.host.publicNavigation.render(content,name);
     else if(name==='Plans')this.renderPlans(content);
     else if(name==='Tools'||name==='Services')this.host.infrastructure.render(content,name);
     else this.host.element('p',description,null,content);

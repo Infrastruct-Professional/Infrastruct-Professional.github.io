@@ -11,6 +11,7 @@ import { WebOSVersion } from './web-os-version.js';
 import { BarcodeSystem } from './barcode-system.js';
 import { EngineeringToolCatalog } from './tools/engineering-tool-catalog.js';
 import { SiteIndex } from './site-index.js';
+import { PublicNavigationSystem } from './public-navigation.js';
 import { PlanSystem, ToolSystem, ServiceSystem, BackgroundSystem } from './core-systems.js';
 import { ShopSystem } from './shop-system.js';
 import { WhoisLookupService } from './services/whois-lookup-service.js';
@@ -53,6 +54,8 @@ class InfrastructProfessional {
     this.randomGenerator=new RandomGeneratorService(this);
     this.shellBooth=new SecureShellBooth(this);
     this.infrastructure=new InfrastructureWorkbench(this);
+    this.publicNavigation=new PublicNavigationSystem(this);
+    this.register('publicNavigation',this.publicNavigation.registry);
     this.siteIndex=new SiteIndex(this);
     this.planSystem=new PlanSystem(this);
     this.toolSystem=new ToolSystem(this);
@@ -215,6 +218,22 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
             }
             nested.addEventListener('toggle',()=>{if(nested.open)for(const other of sub.querySelectorAll('.brand-submenu-group'))if(other!==nested)other.open=false;});
           }
+        }
+      }
+      for(const [section,entries] of Object.entries(this.publicNavigation.sections)){
+        const sub=this.element('details',null,'brand-submenu brand-primary-choice',brandMenu);
+        const summary=this.element('summary',section.toUpperCase(),'brand-menu-item',sub);
+        comment(summary,'Explore '+section.toLowerCase()+' information and resources.');
+        sub.addEventListener('toggle',()=>{if(sub.open)for(const other of brandMenu.querySelectorAll('.brand-primary-choice'))if(other!==sub)other.open=false;this.audit('brand_menu_expand',{label:section,expanded:sub.open});});
+        for(const [title,description] of entries){
+          const button=this.element('button',title.toUpperCase(),null,sub);button.type='button';comment(button,description);
+          button.addEventListener('click',()=>{
+            this.toggleBrandMenu(false);
+            const win=this.webOS.open(section);
+            const topic=win?.content?.querySelectorAll?.('[data-public-topic]');
+            if(topic)for(const element of topic)if(element.dataset.publicTopic===title){element.scrollIntoView?.({block:'nearest'});break;}
+            this.audit('submenu_select',{label:section,name:title});
+          });
         }
       }
       const search=this.element('input',null,'brand-menu-search',brandMenu);

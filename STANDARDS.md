@@ -137,3 +137,8 @@
 - `depot/depot-system.js` registers the future depot IPv4 `91.158.236.166` as public configuration, **not** as a deployed service or trusted connection.
 - Backend runtime activation is deferred until the domain forest, DNS, TLS, trusted authentication and server deployment are ready and explicitly approved.
 - `RuntimeOrchestrator.depotStatus()` returns the staged depot configuration without making network requests. Never put secrets or credentials into this public repository.
+
+## Public navigation taxonomy (2026-11-02)
+- Public menu now includes About, Products, Services, Downloads, Uploads, Help, Support and Contact, each with submenus. Services retains its existing nested groups and working service navigation.
+- `public-navigation.js` owns informational page/submenu content for the seven additional sections. The window runtime renders these pages on desktop/tablet/mobile, and the site index includes their searchable entries.
+- Uploads, exports, contact channels and support services not yet deployed are clearly marked as planned; no backend or file handling is implied.
