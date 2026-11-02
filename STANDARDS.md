@@ -97,3 +97,11 @@
 - `tablet/system/tablet-system.js` implements tablet navigation, full-screen applications and recents. `mobile/system/mobile-system.js` extends it with mobile system identity.
 - Platform modules are instantiated once by the Web OS facade and mounted based on browser environment detection. This does not create privileged operating-system access.
 - The separate `runtime-system.js` remains the JavaScript/webR audit coordinator; `index.R` remains the R audit implementation. The empty `.gitkeep` files may be removed once a directory has committed source files.
+
+
+## Runtime, tool and service module ownership (2026-11-02)
+- `runtime/` contains `runtime-system.js`, `runtime-status.js` and `orchestrator.js`; the root `index.R` is evaluated by the browser-local webR coordinator.
+- `tools/` contains engineering tool catalogue, encoding and random-generation implementations.
+- `services/` contains WHOIS, DNS-provider, hosting-provider and secure-shell booth implementations.
+- The public entrypoint remains root `index.html` -> `index.js`; all JavaScript module imports use the updated relative paths.
+- This is source organization, not proof of functional live backend services or verified browser security.

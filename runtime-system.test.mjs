@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {RuntimeSystem} from './runtime-system.js';
+import {RuntimeSystem} from './runtime/runtime-system.js';
 import {BackgroundSystem} from './core-systems.js';
 test('R audit literals escape quotes, backslashes and newlines',()=>{
   assert.equal(RuntimeSystem.rString('one"two'), '"one\\"two"');
