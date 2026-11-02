@@ -61,3 +61,6 @@ The connected **Infrastruct Professional** Shopify app installation has `write_p
 
 ### Shopify subscription contract read (staged)
 `shopify-contract-reader.mjs` defines an authenticated Admin GraphQL subscription contract query and validates IDs, customer and product lines. Its output is **not entitlement evidence**: it intentionally excludes payment confirmation and entitlement expiration. Shopify API authorization and exact schema availability must be verified against the subscription app installation before live use. The contract reconciler remains disconnected from HTTP routes and requires independently verified billing and customer identity.
+
+### Durable webhook replay marker (single host, not yet integrated)
+`webhook-replay-store.mjs` uses atomic exclusive-create filesystem markers and fsync to reject duplicate webhook IDs across restarts of a single host. It is **not** connected to the webhook HTTP handler, does not provide durable event payload processing, retries, retention, cross-host coordination or exactly-once effects. Production requires a transactional database/queue with atomic event acceptance, processing states, retries, auditing and retention policies. This local module is a tested building block only.
