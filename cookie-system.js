@@ -10,7 +10,9 @@ export class CookieSystem {
   }
   mount(root){
     if(this.choice())return;
-    this.panel=this.host.element('aside',null,'cookie-panel',root);
+    this.panel=this.host.element('aside',null,'cookie-panel cookie-banner',root);
+    const mainBanner=root.querySelector('.minimal-banner');
+    if(mainBanner)mainBanner.insertAdjacentElement('afterend',this.panel);
     this.panel.setAttribute('aria-label','Cookie preferences');
     this.host.element('strong','Cookie preferences',null,this.panel);
     this.host.element('p','We use an essential cookie to remember your choice. Optional cookies are not currently used. Public plans work without accepting optional cookies.',null,this.panel);
