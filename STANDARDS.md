@@ -132,3 +132,8 @@
 - `telegram/`, `whatsapp/`, `github/`, `google/`, `microsoft/` own provider adapter contracts. Connection plans require administrator approval, credentials and trusted authorization; no accounts are connected or tokens embedded in GitHub Pages.
 - `linux/`, `debian/`, `fedora/`, `android/`, `ios/` own browser-detected OS compatibility adapters; detection is advisory and does not grant native privileges. Linux detection does not imply Debian/Fedora detection.
 - `runtime/integration-registry.js` instantiates and registers all ten systems; `RuntimeOrchestrator.integrationStatus()` exposes read-only status snapshots.
+
+## Depot backend staging (2026-11-02)
+- `depot/depot-system.js` registers the future depot IPv4 `91.158.236.166` as public configuration, **not** as a deployed service or trusted connection.
+- Backend runtime activation is deferred until the domain forest, DNS, TLS, trusted authentication and server deployment are ready and explicitly approved.
+- `RuntimeOrchestrator.depotStatus()` returns the staged depot configuration without making network requests. Never put secrets or credentials into this public repository.

@@ -4,6 +4,7 @@ import { IntegrationRegistry } from './runtime/integration-registry.js';
 import { GlobalSystem } from './global/global-system.js';
 import { LocalSystem } from './local/local-system.js';
 import { ServerSystem } from './server/server-system.js';
+import { DepotSystem } from './depot/depot-system.js';
 import { ClientSystem } from './client/client-system.js';
 import { BrowserDetectionSystem } from './browser/detect/browser-detection.js';
 import { WebOSVersion } from './web-os-version.js';
@@ -69,6 +70,8 @@ class InfrastructProfessional {
     this.globalSystem=new GlobalSystem(this);
     this.localSystem=new LocalSystem(this);
     this.serverSystem=new ServerSystem(this);
+    this.depotSystem=new DepotSystem(this);
+    this.register('depot',this.depotSystem.registry);
     this.clientSystem=new ClientSystem(this);
     for(const [scope,system] of Object.entries({global:this.globalSystem,local:this.localSystem,server:this.serverSystem,client:this.clientSystem}))this.register(scope,system.registry);
     this.integrations=new IntegrationRegistry(this);
@@ -85,6 +88,7 @@ class InfrastructProfessional {
     this.register('commerce',this.commerce.registry);
     this.register('services',this.services.registry);
     this.orchestrator.scopes={global:this.globalSystem,local:this.localSystem,server:this.serverSystem,client:this.clientSystem};
+    this.orchestrator.depot=this.depotSystem;
     this.orchestrator.protocols=this.protocols;
     this.orchestrator.integrations=this.integrations;
     this.runtime=new RuntimeSystem(this);
