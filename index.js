@@ -2,6 +2,7 @@ import { WebOSVersion } from './web-os-version.js';
 import { BarcodeSystem } from './barcode-system.js';
 import { EngineeringToolCatalog } from './engineering-tool-catalog.js';
 import { SiteIndex } from './site-index.js';
+import { PlanSystem, ToolSystem, ServiceSystem, BackgroundSystem } from './core-systems.js';
 import { ShopSystem } from './shop-system.js';
 import { WhoisLookupService } from './whois-lookup-service.js';
 import { EncryptedPlanStorage } from './encrypted-plan-storage.js';
@@ -41,6 +42,10 @@ class InfrastructProfessional {
     this.shellBooth=new SecureShellBooth(this);
     this.infrastructure=new InfrastructureWorkbench(this);
     this.siteIndex=new SiteIndex(this);
+    this.planSystem=new PlanSystem(this);
+    this.toolSystem=new ToolSystem(this);
+    this.serviceSystem=new ServiceSystem(this);
+    this.backgroundSystem=new BackgroundSystem(this);
     this.siteAPI=new SiteAPI(this);
     this.cookies=new CookieSystem(this);
     this.initialPlansOpened=false;
@@ -64,6 +69,7 @@ class InfrastructProfessional {
     this.webOS=new WebOperatingSystem(this);
     this.register('webOS',this.webOS.registry);
     this.render();
+    this.backgroundSystem.start();
     this.audit('boot', { environment: this.environment });
     this.enqueue('health-check', () => this.audit('health_check', { mode: this.environment.mode }));
     this.startR();

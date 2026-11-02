@@ -25,10 +25,10 @@ class RuntimeSystem {
   }
   scopedDestinations(win){
     const name=win.name;
-    if(name==='Tools')return this.host.engineeringCatalog.groups.flatMap(group=>group.tools.map(([title,capabilities])=>({title,description:capabilities.slice(0,3).join(' · '),destination:'Tools',tool:title})));
-    if(name==='Services')return [{title:'WHOIS Lookup',description:'Domain registration lookup',destination:'Services'},{title:'Encoders',description:'Encoding and decoding tools',destination:'Services'},{title:'Random Generator',description:'Identifiers and secure random values',destination:'Services'},{title:'DNS Providers',description:'DNS service directory',destination:'Services'},{title:'Web Hosting Providers',description:'Hosting service directory',destination:'Services'},{title:'Secure Shell Booth',description:'Shell interface',destination:'Services'},...['Inventory','Shop','Cart','Checkout'].map(title=>({title,description:'Commerce subsystem',destination:title}))];
-    if(['Inventory','Shop','Cart','Checkout'].includes(name))return ['Inventory','Shop','Cart','Checkout'].map(title=>({title,description:'Commerce subsystem',destination:title}));
-    if(name==='Plans')return ['Free','Starter','Professional','Enterprise'].map(title=>({title,description:'Subscription plan',destination:'Plans'}));
+    if(name==='Tools')return this.host.toolSystem.sections;
+    if(name==='Services')return this.host.serviceSystem.sections;
+    if(name==='Plans')return this.host.planSystem.sections;
+    if(['Inventory','Shop','Cart','Checkout'].includes(name))return this.host.serviceSystem.sections.filter(item=>['Inventory','Shop','Cart','Checkout'].includes(item.title));
     return [];
   }
   installScopedSearch(win,input){
