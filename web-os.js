@@ -14,10 +14,10 @@ class RuntimeSystem {
     const id=++this.sequence,el=this.host.element('section',null,'os-window',this.root);
     el.setAttribute('role','dialog');el.setAttribute('aria-label',name);el.tabIndex=-1;
     const bar=this.host.element('div',null,'os-titlebar',el);
-    this.host.element('strong',name,null,bar);
+    this.host.element('strong',name.toUpperCase(),null,bar);
     const controls=this.host.element('div',null,'os-controls',bar);
     const content=this.host.element('div',null,'os-content',el);
-    if((name==='Tools'||name==='Services')&&!this.host.freePlanSelected){this.host.audit('plan_entry_required',{service:name});name='Plans';el.setAttribute('aria-label','Plans');bar.querySelector('strong').textContent='Plans';}
+    if((name==='Tools'||name==='Services')&&!this.host.freePlanSelected){this.host.audit('plan_entry_required',{service:name});name='Plans';el.setAttribute('aria-label','Plans');bar.querySelector('strong').textContent='PLANS';}
     this.navigateContent(content,name,description,false);
     const win={id,name,element:el,bar,controls,content,history:[],minimized:false,maximized:false};
     this.windows.set(id,win);this.host.barcodes?.attachWindow(win);this.installPopToggle(win);this.installScrollArrows(win);this.focus(id);this.animateWindow(el,'open');this.record('open',{id,name});return win;
