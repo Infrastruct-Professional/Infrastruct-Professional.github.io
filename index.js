@@ -213,7 +213,7 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
       main.setAttribute('aria-label','Infrastruct Professional');
       const logo=this.element('img',null,'center-logo',main);
       logo.src='./infrastruct-logo.png';logo.alt='Infrastruct Professional';logo.width=1000;logo.decoding='async';
-      this.element('small','Here we are not using AI, but here we have the tools to build them.','desktop-motto',this.root);
+      this.element('small','Here we are not using AI, but here we have the tools to build them. © '+new Date().getFullYear()+' Infrastruct Professional. All rights reserved.','desktop-motto',this.root);
       this.root.append(this.publicIP.browser.parentNode);
       this.taskbar=null;
       this.onStartOutside=event=>{if(!brandMenu.contains(event.target)&&!brandButton.contains(event.target))this.toggleBrandMenu(false);if(!event.target.closest('.session-qr-detail,.session-qr-button'))this.barcodes.dismissSession();};
