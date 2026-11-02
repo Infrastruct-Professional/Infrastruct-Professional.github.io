@@ -28,7 +28,7 @@ class RuntimeSystem {
     if(name==='Tools')return this.host.toolSystem.sections;
     if(name==='Services')return this.host.serviceSystem.sections;
     if(name==='Plans')return this.host.planSystem.sections;
-    if(['Inventory','Shop','Cart','Checkout'].includes(name))return this.host.serviceSystem.sections.filter(item=>['Inventory','Shop','Cart','Checkout'].includes(item.title));
+    if(['Shop','Cart','Checkout'].includes(name))return this.host.serviceSystem.sections.filter(item=>['Shop','Cart','Checkout'].includes(item.title));
     return [];
   }
   installScopedSearch(win,input){
@@ -123,7 +123,7 @@ class RuntimeSystem {
     if((name==='Tools'||name==='Services')&&!this.host.freePlanSelected)name='Plans';
     if(win){win.name=name;win.element.setAttribute('aria-label',name);win.bar.querySelector('strong').textContent=name.toUpperCase();win.refreshSearch?.();}
     if(win?.history.length){const back=this.host.element('button','← Back','os-content-back',content);back.type='button';back.addEventListener('click',()=>{const previous=win.history.pop();this.navigateContent(content,previous,'',false);});}
-    if(['Inventory','Shop','Cart','Checkout'].includes(name))this.host.shop.render(content,name);
+    if(['Shop','Cart','Checkout'].includes(name))this.host.shop.render(content,name);
     else if(name==='Index')this.host.siteIndex.render(content);
     else if(name==='Plans')this.renderPlans(content);
     else if(name==='Tools'||name==='Services')this.host.infrastructure.render(content,name);

@@ -14,10 +14,10 @@ export class ShopSystem {
   confirm(){const lines=this.lines();if(!lines.length)throw Error('Cart is empty');if(lines.some(line=>!line.product.active||line.product.priceCents!==0))throw Error('Paid checkout is not connected');const receipt={id:crypto.randomUUID(),createdAt:new Date().toISOString(),status:'local-free-confirmation',totalCents:0,lines:lines.map(line=>({id:line.product.id,quantity:line.quantity,priceCents:line.product.priceCents}))};this.orders.push(receipt);this.registry.checkout.instances.push(receipt);this.cart.clear();this.host?.audit?.('shop_checkout_confirmed',{order:receipt.id,totalCents:0});return receipt;}
   render(content,section='Shop'){
     const e=(tag,text,cls,parent)=>this.host.element(tag,text,cls,parent);
-    const nav=e('nav',null,'shop-nav',content);for(const name of ['Inventory','Shop','Cart','Checkout']){const b=e('button',name,null,nav);b.type='button';b.addEventListener('click',()=>this.host.webOS.open(name));}
+    const nav=e('nav',null,'shop-nav',content);for(const name of ['Shop','Cart','Checkout']){const b=e('button',name,null,nav);b.type='button';b.addEventListener('click',()=>this.host.webOS.open(name));}
     e('h2',section.toUpperCase(),null,content);
-    if(section==='Inventory'||section==='Shop'){
-      e('p',section==='Inventory'?'Inventory catalogue with availability and draft prices. No live stock synchronization.':'Available and proposed subscriptions. Paid purchases are disabled until verified billing is connected.',null,content);
+    if(section==='Shop'){
+      e('p','Available and proposed subscriptions. Paid purchases are disabled until verified billing is connected.',null,content);
       const grid=e('div',null,'shop-grid',content);
       for(const product of this.inventory){const card=e('article',null,'shop-card',grid);e('strong',product.name,null,card);e('span',this.host.commerce.catalog.display(product.priceCents)+' / month',null,card);e('small',product.description,null,card);e('small',product.active?'Available for local zero-charge confirmation':'Preview only · Not purchasable',null,card);if(section==='Shop'){const button=e('button',product.active?'Add to cart':'Not available',null,card);button.type='button';button.disabled=!product.active;button.addEventListener('click',()=>{this.add(product.id);this.host.webOS.open('Cart');});}}
     }else if(section==='Cart'){

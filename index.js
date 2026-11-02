@@ -174,7 +174,7 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
         if(label==='Plans'){
           for(const [name,description] of planEntries){const link=this.element('button',name.toUpperCase(),null,sub);link.type='button';comment(link,description);link.addEventListener('click',()=>{this.toggleBrandMenu(false);this.webOS.open('Plans');this.audit('submenu_select',{label,name});});}
         }else{
-          const groups=label==='Tools'?this.engineeringCatalog.groups.map(group=>({name:group.name,items:group.tools.map(([name])=>name)})):[{name:'Network & identity',items:['WHOIS Lookup','DNS Providers']},{name:'Data & generation',items:['Encoders','Random Generator']},{name:'Hosting & access',items:['Web Hosting Providers','Secure Shell Booth']},{name:'Commerce',items:['Inventory','Shop','Cart','Checkout']}];
+          const groups=label==='Tools'?this.engineeringCatalog.groups.map(group=>({name:group.name,items:group.tools.map(([name])=>name)})):[{name:'Network & identity',items:['WHOIS Lookup','DNS Providers']},{name:'Data & generation',items:['Encoders','Random Generator']},{name:'Hosting & access',items:['Web Hosting Providers','Secure Shell Booth']},{name:'Commerce',items:['Shop','Cart','Checkout']}];
           for(const group of groups){
             const nested=this.element('details',null,'brand-submenu-group',sub);const summary=this.element('summary',group.name.toUpperCase(),null,nested);comment(summary,'Browse '+group.name.toLowerCase()+' capabilities.');
             for(const name of group.items){
@@ -184,7 +184,7 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
               link.addEventListener('click',()=>{
                 this.toggleBrandMenu(false);
                 if(label==='Tools')this.engineeringCatalogSelection=name;
-                this.webOS.open(['Inventory','Shop','Cart','Checkout'].includes(name)?name:label);
+                this.webOS.open(['Shop','Cart','Checkout'].includes(name)?name:label);
                 if(label==='Tools')this.webOS.active?.windows?.forEach?.(win=>{if(win.name==='Tools'){win.content.replaceChildren();this.infrastructure.render(win.content,'Tools');}});
                 this.audit('submenu_select',{label,name});
               });
