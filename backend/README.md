@@ -58,3 +58,6 @@ The connected **Infrastruct Professional** Shopify app installation has `write_p
 
 ### Authenticated Shopify Admin read client (not deployed)
 `shopify-admin-client.mjs` implements a server-only, read-only GraphQL transport with a validated shop domain, API version, request timeout, strict errors and a scope-inspection method. Tests use an injected fake transport; **no live API credentials have been configured**. Keep `SHOPIFY_ADMIN_ACCESS_TOKEN` in a server secret manager, never in GitHub Pages. A future verified contract-fetch method must be implemented against Shopify's approved subscription API schema and independently confirmed billing state before feeding the policy reconciler. The current client does not fetch subscription contracts or grant access.
+
+### Shopify subscription contract read (staged)
+`shopify-contract-reader.mjs` defines an authenticated Admin GraphQL subscription contract query and validates IDs, customer and product lines. Its output is **not entitlement evidence**: it intentionally excludes payment confirmation and entitlement expiration. Shopify API authorization and exact schema availability must be verified against the subscription app installation before live use. The contract reconciler remains disconnected from HTTP routes and requires independently verified billing and customer identity.
