@@ -124,7 +124,7 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
 .public-ip-value.is-online:hover{color:#ffffff!important;text-shadow:none}
 .public-ip-value.is-offline{color:#ff4f58!important;text-shadow:0 0 7px #ff303a,0 0 14px #bf202b}
 .public-ip-value.is-pending{color:#b4c2cd!important;text-shadow:none}
-.minimal-banner{justify-content:flex-start;padding-left:4px;padding-right:8px;align-items:center}.banner-logo{display:block;width:min(150px,52vw);height:30px;object-fit:contain;object-position:left center}
+.minimal-banner{display:flex!important;position:relative;justify-content:flex-start;padding-left:4px;padding-right:12px;align-items:center;gap:6px;overflow:hidden}.minimal-banner .public-ip-field{flex:0 1 auto;overflow:hidden;min-width:0}.minimal-banner .web-os-version{display:block!important;position:absolute;right:12px;top:50%;transform:translateY(-50%);margin:0;padding:0 0 0 10px;background:linear-gradient(90deg,transparent,#14293b 12px);font-size:16px;font-weight:700;color:#fff;max-width:none;overflow:visible;white-space:nowrap;z-index:2}.minimal-banner{padding-right:110px}.banner-logo{display:block;width:min(150px,52vw);height:30px;object-fit:contain;object-position:left center}
 `;
   }
   render() {
