@@ -16,6 +16,8 @@ export class SiteIndex {
     add('Mail','Mail','Mail access','Open-Xchange mailbox access window');
     add('Mail Login','Mail Login','Mail access','Open-Xchange provider-hosted authentication');
     add('Mail Help','Mail Help','Mail access','EuroDNS Open-Xchange webmail instructions');
+    add('Cloud Engineering','Cloud','Infrastructure','Cloud, hybrid and multi-cloud blueprint engineering');
+    add('Site Engineering','Site','Infrastructure','Site domain, hosting and deployment blueprint engineering');
     add('Encrypted local planning','Tools','Planning','Infrastructure checklist, local encrypted storage and project assessments');
     add('Session QR','Index','Web OS','Anonymous runtime session QR identifier, double-click to copy');
     add('Window EAN','Index','Web OS','Internal EAN-13 window identifier, double-click to copy');

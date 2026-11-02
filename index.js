@@ -13,6 +13,8 @@ import { EngineeringToolCatalog } from './tools/engineering-tool-catalog.js';
 import { SiteIndex } from './site-index.js';
 import { PublicNavigationSystem } from './public-navigation.js';
 import { MailSystem } from './mail/mail-system.js';
+import { CloudSystem } from './cloud/cloud-system.js';
+import { SiteSystem } from './site/site-system.js';
 import { PlanSystem, ToolSystem, ServiceSystem, BackgroundSystem } from './core-systems.js';
 import { ShopSystem } from './shop-system.js';
 import { WhoisLookupService } from './services/whois-lookup-service.js';
@@ -55,6 +57,10 @@ class InfrastructProfessional {
     this.randomGenerator=new RandomGeneratorService(this);
     this.shellBooth=new SecureShellBooth(this);
     this.infrastructure=new InfrastructureWorkbench(this);
+    this.cloudSystem=new CloudSystem(this);
+    this.register('cloud',this.cloudSystem.registry);
+    this.siteSystem=new SiteSystem(this);
+    this.register('site',this.siteSystem.registry);
     this.mailSystem=new MailSystem(this);
     this.register('mail',this.mailSystem.registry);
     this.publicNavigation=new PublicNavigationSystem(this);
@@ -243,6 +249,8 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
       const mailSummary=this.element('summary','MAIL','brand-menu-item',mailMenu);comment(mailSummary,'EuroDNS mail access and provider sign-in.');
       mailMenu.addEventListener('toggle',()=>{if(mailMenu.open)for(const other of brandMenu.querySelectorAll('.brand-primary-choice'))if(other!==mailMenu)other.open=false;});
       for(const [title,description] of [['Mail','Open the Open-Xchange mail access window.'],['Mail Login','Open the dedicated Open-Xchange sign-in window.'],['Mail Help','Open EuroDNS webmail instructions.']]){const link=this.element('button',title.toUpperCase(),null,mailMenu);link.type='button';comment(link,description);link.addEventListener('click',()=>{this.toggleBrandMenu(false);this.webOS.open(title);this.audit('submenu_select',{label:'Mail',name:title});});}
+      for(const [section,items] of [['Cloud',['Cloud Engineering','Cloud Architecture']],['Site',['Site Engineering','Site Architecture']]]){const sub=this.element('details',null,'brand-submenu brand-primary-choice',brandMenu);const summary=this.element('summary',section.toUpperCase(),'brand-menu-item',sub);comment(summary,'Open '+section.toLowerCase()+' engineering workspace.');sub.addEventListener('toggle',()=>{if(sub.open)for(const other of brandMenu.querySelectorAll('.brand-primary-choice'))if(other!==sub)other.open=false;});for(const item of items){const button=this.element('button',item.toUpperCase(),null,sub);button.type='button';comment(button,'Open '+section.toLowerCase()+' design and planning.');button.addEventListener('click',()=>{this.toggleBrandMenu(false);this.webOS.open(section);this.audit('submenu_select',{label:section,name:item});});}}
+      for(const [section,items] of [['Cloud',['Cloud Engineering','Cloud Architecture']],['Site',['Site Engineering','Site Architecture']]]){const sub=this.element('details',null,'brand-submenu brand-primary-choice',brandMenu);const summary=this.element('summary',section.toUpperCase(),'brand-menu-item',sub);comment(summary,'Open '+section.toLowerCase()+' engineering workspace.');sub.addEventListener('toggle',()=>{if(sub.open)for(const other of brandMenu.querySelectorAll('.brand-primary-choice'))if(other!==sub)other.open=false;});for(const item of items){const button=this.element('button',item.toUpperCase(),null,sub);button.type='button';comment(button,'Open '+section.toLowerCase()+' design and planning.');button.addEventListener('click',()=>{this.toggleBrandMenu(false);this.webOS.open(section);this.audit('submenu_select',{label:section,name:item});});}}
       const search=this.element('input',null,'brand-menu-search',brandMenu);
       search.type='search';search.placeholder='Search as you type...';search.setAttribute('aria-label','Search as you type through website index');
       const searchResults=this.element('div',null,'brand-menu-search-results',brandMenu);searchResults.hidden=true;

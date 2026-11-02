@@ -150,3 +150,8 @@
 ## Open-Xchange mail correction (2026-11-02)
 - EuroDNS confirms mailbox login at `https://www.openxchange.eu/appsuite/` (full email address plus mailbox password), separate from EuroDNS account management.
 - Mail, Mail Login and Mail Help are distinct Web OS windows. External sign-in remains on the official Open-Xchange origin; no credentials or tokens enter the public site.
+
+## Cloud and site engineering foundations (2026-11-02)
+- `cloud/cloud-system.js` defines provider-neutral cloud, hybrid, multi-cloud and private-cloud architecture blueprints across identity, networking, compute, storage, security, observability, recovery and cost.
+- `site/site-system.js` defines website engineering blueprints for domains, hosting, TLS, frontend, backend, performance and monitoring.
+- Both have class registries, dedicated Web OS windows and menu/index entries. Generated blueprints remain browser-local and are not deployed or persisted; actual infrastructure provisioning requires a trusted authorized backend.
