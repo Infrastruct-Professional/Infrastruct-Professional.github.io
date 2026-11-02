@@ -11,17 +11,8 @@ export class CookieSystem {
     this.panel?.remove();this.panel=null;
   }
   mount(root){
-    if(this.choice())return;
-    this.panel=this.host.element('aside',null,'cookie-panel cookie-banner',root);
-    const mainBanner=root.querySelector('.minimal-banner');
-    if(mainBanner)mainBanner.insertAdjacentElement('afterend',this.panel);
-    this.panel.setAttribute('aria-label','Cookie preferences');
-    this.host.element('strong','Cookie preferences',null,this.panel);
-    this.host.element('p','Essential cookies support sign-in, sessions and Free plan functionality. They are initialized when you sign in or activate Free. Optional cookies are used only for features you separately choose to enable; no optional tracking is currently active.',null,this.panel);
-    const actions=this.host.element('div',null,'cookie-actions',this.panel);
-    for(const [text,choice] of [['Use essential cookies','essential'],['Accept optional','optional']]){
-      const button=this.host.element('button',text,null,actions);button.type='button';button.addEventListener('click',()=>this.save(choice));
-    }
+    // Consent banner retired; essential preferences are initialized by sign-in / Free activation.
+    // Optional consent remains an explicit choice, never inferred from account access.
   }
   unmount(){this.panel?.remove();this.panel=null;}
 }
