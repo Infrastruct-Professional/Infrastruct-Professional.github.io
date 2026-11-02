@@ -10,6 +10,9 @@ export class EngineeringToolCatalog {
         ['Compiler',['Lexical, syntax and semantic analysis','Intermediate representations','Type checking','Optimisation passes','Code generation and linking','Ahead-of-time and just-in-time compilation','Cross-compilation and diagnostics']],
         ['Decompiler',['Binary lifting to intermediate representation','Control-flow recovery','Type and variable inference','Pseudocode generation','Function and call-graph reconstruction','Symbol recovery','Limitations of source reconstruction']]]},
       {name:'Lexical & structural processing',tools:[
+        ['Translator',['Natural-language translation','Source and target language selection','Terminology and domain glossaries','Translation memory and alignment','Code and markup preservation','Document and structured-data translation','Quality checks and human review']],
+        ['Tokeniser',['Word, sentence and subword segmentation','Unicode normalisation and boundary rules','BPE, WordPiece and unigram vocabularies','Special tokens and token IDs','Offsets, spans and alignment','Streaming and batch tokenisation','Vocabulary and unknown-token handling']],
+        ['Detokeniser',['Token ID to vocabulary decoding','Subword and byte sequence reconstruction','Special-token filtering','Whitespace and punctuation recovery','Unicode and escaping restoration','Round-trip fidelity checks','Streaming token reconstruction']],
         ['Lexer',['Token rules and grammars','Unicode and encodings','Whitespace and comments','Token positions and spans','Streaming and incremental tokenisation','Error tokens and diagnostics']],
         ['Delexer',['Token-to-text reconstruction','Whitespace and formatting','Comments and trivia preservation','Escaping and quoting','Round-trip fidelity','Source maps']],
         ['Parser',['Grammar definitions','LL, LR and PEG strategies','Abstract and concrete syntax trees','Error recovery','Incremental parsing','Validation and diagnostics']],
