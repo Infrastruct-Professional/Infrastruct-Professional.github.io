@@ -161,8 +161,9 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
       for(const label of ['Plans','Tools','Services']){
         const item=this.element('button',label,'brand-menu-item',brandMenu);item.type='button';
         comment(item,descriptions[label]);
-        item.addEventListener('click',()=>{this.toggleBrandMenu(false);this.webOS.open(label);this.audit('brand_menu_select',{label});});
         const sub=this.element('details',null,'brand-submenu',brandMenu);
+        item.setAttribute('aria-expanded','false');
+        item.addEventListener('click',()=>{sub.open=!sub.open;this.audit('brand_menu_expand',{label,expanded:sub.open});});
         this.element('summary',label==='Plans'?'BROWSE PLANS':label==='Tools'?'BROWSE TOOL FAMILIES':'BROWSE SERVICE FAMILIES',null,sub);
         if(label==='Plans'){
           for(const [name,description] of planEntries){const link=this.element('button',name.toUpperCase(),null,sub);link.type='button';comment(link,description);link.addEventListener('click',()=>{this.toggleBrandMenu(false);this.webOS.open('Plans');this.audit('submenu_select',{label,name});});}
@@ -185,8 +186,7 @@ html,body,button,input,select,textarea{font-family:'Smooch Sans',sans-serif!impo
             nested.addEventListener('toggle',()=>{if(nested.open)for(const other of sub.querySelectorAll('.brand-submenu-group'))if(other!==nested)other.open=false;});
           }
         }
-        sub.addEventListener('toggle',()=>{if(sub.open)for(const other of brandMenu.querySelectorAll('.brand-submenu'))if(other!==sub)other.open=false;});
-        if(label!=='Plans'){item.hidden=true;sub.hidden=true;this.planMenuItems.push(item,sub);}
+        sub.addEventListener('toggle',()=>{item.setAttribute('aria-expanded',String(sub.open));if(sub.open)for(const other of brandMenu.querySelectorAll('.brand-submenu'))if(other!==sub)other.open=false;});
       }
       const indexButton=this.element('button','INDEX','brand-menu-item',brandMenu);indexButton.type='button';comment(indexButton,'Search the indexed tools, services, plans and Web OS capabilities.');indexButton.addEventListener('click',()=>{this.toggleBrandMenu(false);this.webOS.open('Index');});
       this.barcodes.mountSession(brandMenu);
