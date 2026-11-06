@@ -5,7 +5,7 @@ export class PublicNavigationSystem {
     this.sections={
       About:[['Overview','What Infrastruct Professional is and what it currently provides.'],['Architecture','JavaScript, webR and platform system boundaries.'],['Roadmap','Planned backend, domain forest and integration milestones.']],
       Products:[['Web OS','Desktop windows and Android-style tablet/mobile navigation.'],['Engineering Tools','Engineering and development tool catalogue.'],['Plans','Free browser-local access and proposed subscription tiers.']],
-      Downloads:[['Documentation','Read project documentation in the public GitHub repository.'],['Source Code','Access the published open-source website repository.'],['Exports','Export facilities are not yet implemented.']],
+      Downloads:[['Download Site','Download the current website source as a ZIP package for your home server.'],['Documentation','Read project documentation in the public GitHub repository.'],['Source Code','Access the published open-source website repository.']],
       Uploads:[['Local Files','File upload processing is not yet implemented.'],['Import Planning','Future browser-local import and validation workflow.'],['Secure Transfers','Server-backed uploads await the authenticated backend.']],
       Help:[['Getting Started','Open the dashboard, plans and browser-local tools.'],['Navigation','Use the menu, searchable index and platform navigation controls.'],['FAQ','Review current functionality and planned integrations.']],
       Support:[['Support Overview','Support channels have not yet been activated.'],['Report an Issue','Use the GitHub repository issue tracker.'],['System Status','Inspect the runtime dashboard for browser-local state.']],
@@ -22,6 +22,10 @@ export class PublicNavigationSystem {
     for(const [title,description] of items){
       const block=el('section',null,'dashboard-card',content);block.dataset.publicTopic=title;
       el('h3',title,null,block);el('p',description,null,block);
+      if(section==='Downloads'&&title==='Download Site'){
+        this.link(block,'Download Site',()=>globalThis.location.assign('https://github.com/Infrastruct-Professional/Infrastruct-Professional.github.io/archive/refs/heads/main.zip'));
+        el('p','ZIP archive of the current main branch. Extract the package and serve its root folder over HTTP or HTTPS; index.html is the entry point. Browser data, credentials and live server services are not included.',null,block);
+      }
       if(section==='Products'&&title==='Plans')this.link(block,'Open Plans',()=>this.host.webOS.open('Plans'));
       if(section==='Products'&&title==='Engineering Tools')this.link(block,'Open Tools',()=>this.host.webOS.open('Tools'));
       if(section==='Help'&&title==='Getting Started')this.link(block,'Open Dashboard',()=>this.host.webOS.open('Dashboard'));
